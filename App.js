@@ -21,6 +21,7 @@ export default function App() {
         <Stack.Screen name="Regiment Selection" component={SelectionScreen} />
         <Stack.Screen name="Regiment Editor" component={EditingScreen} />
         <Stack.Screen name="Goals" component={GoalsScreen} />
+        <Stack.Screen name="Workout" component={CurrentExerciseScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -30,6 +31,12 @@ function LoginScreen({ navigation }) {
   return (
     <>
       <Text>This is the Login Screen</Text>
+      <Button
+        title="Select Regiment"
+        onPress={() => {
+          navigation.navigate("Regiment Selection");
+        }}
+      ></Button>
       <Button
         title="Register"
         onPress={() => {
@@ -66,13 +73,19 @@ function SelectionScreen({ navigation }) {
       <Button
         title="Begin Workout"
         onPress={() => {
-          navigation.navigate("Workout Display");
+          navigation.navigate("Workout");
         }}
       ></Button>
       <Button
         title="View Goals"
         onPress={() => {
           navigation.navigate("Goals");
+        }}
+      ></Button>
+      <Button
+        title="Log Out"
+        onPress={() => {
+          navigation.navigate("Login");
         }}
       ></Button>
     </>
@@ -96,7 +109,21 @@ function EditingScreen({ navigation }) {
 function GoalsScreen({ navigation }) {
   return (
     <>
-      <Text>This is the Regiment Editor Screen</Text>
+      <Text>This is the Goals Screen</Text>
+      <Button
+        title="Return to Workout Selection"
+        onPress={() => {
+          navigation.navigate("Regiment Selection");
+        }}
+      ></Button>
+    </>
+  );
+}
+
+function CurrentExerciseScreen({ navigation }) {
+  return (
+    <>
+      <Text>This is the Workout Screen</Text>
       <Button
         title="Return to Workout Selection"
         onPress={() => {
