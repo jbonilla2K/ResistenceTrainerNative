@@ -5,6 +5,7 @@ import { CheckBox, Input, Button } from "@rneui/themed";
 import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createNativeStackNavigator();
 const loginData = [];
@@ -60,9 +61,15 @@ function LoginScreen({ navigation }) {
         onPress={() => {
           console.log(`Username: ${username} Password: ${password}`);
           // console.log(loginData);
-          // let validUser = (input) => input.username === username;
-          // let validPass = (input) => input.password === password;
-          navigation.navigate("Regiment Selection");
+          let validUser = (input) => input.username === username;
+          let validPass = (input) => input.password === password;
+          if (loginData.some(validUser) && loginData.some(validPass)) {
+            navigation.navigate("Regiment Selection");
+          } else {
+            alert(
+              "Login invalid, please check your entries or press 'Register' to create an account."
+            );
+          }
         }}
       ></Button>
       <Button
@@ -75,50 +82,100 @@ function LoginScreen({ navigation }) {
   );
 }
 function RegistrationScreen({ navigation }) {
+  let [username, setUsername] = useState("");
+  let [password, setPassword] = useState("");
+  let [confirmPass, setConfrimPass] = useState("");
+  let [fName, setFname] = useState("");
+  let [lName, setLname] = useState("");
+  let [email, setEmail] = useState("");
+  let newUser = {
+    username: username,
+    password: password,
+    firstName: fName,
+    lastName: lName,
+    email: email,
+    usrRegiment: [],
+  };
+  let flags = [false, false, false, false];
+  let gate = 0;
+  let nameRegEx = /^[^\d=?\\/@#%^&*()]+$/;
+  let emailRegEx =
+    /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+
+  function validateEmail(value) {
+    let error;
+    if (!value) {
+      error = "";
+    } else if (!emailRegEx.test(value)) {
+      error = "Invalid email";
+    } else {
+      error = "";
+      flags[3] = true;
+    }
+    return error;
+  }
+  function validateName(value) {
+    let error;
+    if (!value) {
+      error = "";
+    } else if (!nameRegEx.test(value)) {
+      error = "Invalid";
+    } else {
+      flags[0] = true;
+    }
+    return error;
+  }
+  function validatePassword(value) {
+    let error;
+    if (!value) {
+      error = "";
+    } else if (!/[A-Z]/.test(value)) {
+      error = "Please add uppercase letter";
+    } else if (!/[0-9]/.test(value)) {
+      error = "Please add a number";
+    } else {
+      flags[1] = true;
+    }
+    return error;
+  }
+  function validateConfirmPass(value) {
+    let error;
+    if (password !== value) {
+      error = "Passwords do not match";
+    } else if (!value) {
+      error = "";
+    } else {
+      error = "";
+      flags[2] = true;
+    }
+    return error;
+  }
   return (
     <>
-      <Text style={styles.header}>
-        Please fill out the required fields below.
-      </Text>
+      <Text>Please fill out the required fields below.</Text>
       <Input
-        containerStyle={styles.input}
         placeholder="First Name"
-        testID="firstname"
         onChangeText={setFname}
-        name="firstname"
         errorMessage={validateName(fName)}
       ></Input>
       <Input
-        containerStyle={styles.input}
         placeholder="Last Name"
-        testID="lastname"
         onChangeText={setLname}
         errorMessage={validateName(lName)}
       ></Input>
+      <Input placeholder="Username" onChangeText={setUsername}></Input>
       <Input
-        containerStyle={styles.input}
-        placeholder="Username"
-        testID="username"
-        onChangeText={setUsername}
-      ></Input>
-      <Input
-        containerStyle={styles.input}
         placeholder="Password - Be sure to include an uppercase letter and a number."
-        testID="password"
         onChangeText={setPassword}
         errorMessage={validatePassword(password)}
       ></Input>
       <Input
-        containerStyle={styles.input}
         placeholder="Confirm Password"
-        testID="confirmpassword"
         onChangeText={setConfrimPass}
         errorMessage={validateConfirmPass(confirmPass)}
       ></Input>
       <Input
-        containerStyle={styles.input}
         placeholder="Email - someone@email.com"
-        testID="email"
         onChangeText={setEmail}
         onBlur={() => {
           let result = validateEmail(email);
@@ -127,12 +184,10 @@ function RegistrationScreen({ navigation }) {
         errorMessage={validateEmail(email)}
       ></Input>
       <Button
-        style={styles.button}
         color="#000"
         title="Sign Up"
         testID="register-button"
         onPress={() => {
-          loginData.push(newUser);
           for (var i = 0; i < flags.length; i++) {
             console.log(flags);
             if (flags[i] == true) {
@@ -140,18 +195,12 @@ function RegistrationScreen({ navigation }) {
             }
           }
           console.log(gate);
-          if (gate != 5) {
+          if (gate != flags.length) {
             alert("All fields must be filled in correctly.");
           } else {
-            navigation.navigate("Todo Screen");
+            loginData.push(newUser);
+            navigation.navigate("Regiment Selection");
           }
-        }}
-      ></Button>
-      <Text>This is the Registration Screen</Text>
-      <Button
-        title="Complete Registration"
-        onPress={() => {
-          navigation.navigate("Regiment Selection");
         }}
       ></Button>
     </>
