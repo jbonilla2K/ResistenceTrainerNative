@@ -6,13 +6,55 @@ import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { TextInput } from "react-native-web";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 const Stack = createNativeStackNavigator();
 const loginData = [];
 const defaultUser = {
   username: "test",
   password: "Test1@",
+  usrRegiment: [],
 };
+
+//===============================user profile object structure==========================
+// let newUser = {
+//   username: username,
+//   password: password,
+//   firstName: fName,
+//   lastName: lName,
+//   email: email,
+//   usrRegiment: [],
+//   usrGoals: [],
+// };
+
+const workouts = [
+  {
+    key: 0,
+    workout: "push",
+    exercises: ["Push-Ups", "Incline Bench-Press", "Flat Bench-Press"],
+  },
+  {
+    key: 1,
+    workout: "pull",
+    exercises: ["Pull-Ups", "Barbell Rows", "Cable Pulldowns"],
+  },
+  {
+    key: 2,
+    workout: "legs",
+    exercises: ["Lunges", "Front Squats", "Squats"],
+  },
+  {
+    key: 3,
+    workout: "shoulders",
+    exercises: ["Teacups", "Lateral Raise", "Face Pulls"],
+  },
+  {
+    key: 4,
+    workout: "rest",
+    exercises: ["Toe Touch", "Dead Hang", "Shoulder Circles"],
+  },
+];
 
 export default function App() {
   useEffect(() => {
@@ -29,9 +71,12 @@ export default function App() {
     }
     getValue();
   }, []);
+
+  let [currCustRegiment, setCurrCustRegiment] = useState([]);
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="Regiment Editor">
         <Stack.Screen
           name="Login"
           component={LoginScreen}
@@ -60,7 +105,6 @@ function LoginScreen({ navigation }) {
         testID="login-button"
         onPress={() => {
           console.log(`Username: ${username} Password: ${password}`);
-          // console.log(loginData);
           let validUser = (input) => input.username === username;
           let validPass = (input) => input.password === password;
           if (loginData.some(validUser) && loginData.some(validPass)) {
@@ -95,6 +139,7 @@ function RegistrationScreen({ navigation }) {
     lastName: lName,
     email: email,
     usrRegiment: [],
+    usrGoals: [],
   };
   let flags = [false, false, false, false];
   let gate = 0;
@@ -220,7 +265,7 @@ function SelectionScreen({ navigation }) {
       <Button
         title="Begin Workout"
         onPress={() => {
-          navigation.navigate("Workout");
+          // navigation.navigate("Workout");
         }}
       ></Button>
       <Button
@@ -238,11 +283,33 @@ function SelectionScreen({ navigation }) {
     </>
   );
 }
+function EditingScreen({ navigation, setCurrCustRegiment }) {
+  let [mon, setMon] = useState(0);
+  let [tue, setTue] = useState(0);
+  let [wed, setWed] = useState(0);
+  let [thu, setThu] = useState(0);
+  let [fri, setFri] = useState(0);
+  let [sat, setSat] = useState(0);
+  let [sun, setSun] = useState(0);
 
-function EditingScreen({ navigation }) {
   return (
     <>
-      <Text>This is the Regiment Editor Screen</Text>
+      <TextInput value={mon} onChangeText={setMon}></TextInput>
+      <TextInput value={tue} onChangeText={setTue}></TextInput>
+      <TextInput value={wed} onChangeText={setWed}></TextInput>
+      <TextInput value={thu} onChangeText={setThu}></TextInput>
+      <TextInput value={fri} onChangeText={setFri}></TextInput>
+      <TextInput value={sat} onChangeText={setSat}></TextInput>
+      <TextInput value={sun} onChangeText={setSun}></TextInput>
+
+      <Button
+        title="Save Regiment"
+        onPress={() => {
+          console.log(loginData);
+          // setCurrCustRegiment(mon, tue, wed, thu, fri, sat, sun);
+        }}
+      ></Button>
+
       <Button
         title="Return to Workout Selection"
         onPress={() => {
