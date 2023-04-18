@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Dimensions } from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView, FlatList, StyleSheet, Text, View } from "react-native";
 import { CheckBox, Input, Button } from "@rneui/themed";
@@ -7,14 +7,14 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TextInput } from "react-native-web";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { SwiperFlatList } from "react-native-swiper-flatlist";
 
 const Stack = createNativeStackNavigator();
 const loginData = [];
 const defaultUser = {
   username: "test",
   password: "Test1@",
-  usrRegiment: [],
+  usrRegiment: [0, 1, 2, 3, 4],
 };
 
 //===============================user profile object structure==========================
@@ -72,11 +72,9 @@ export default function App() {
     getValue();
   }, []);
 
-  let [currCustRegiment, setCurrCustRegiment] = useState([]);
-
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Regiment Editor">
+      <Stack.Navigator initialRouteName="Login">
         <Stack.Screen
           name="Login"
           component={LoginScreen}
@@ -108,7 +106,7 @@ function LoginScreen({ navigation }) {
           let validUser = (input) => input.username === username;
           let validPass = (input) => input.password === password;
           if (loginData.some(validUser) && loginData.some(validPass)) {
-            navigation.navigate("Regiment Selection");
+            navigation.navigate("Regiment Selection", { loginData: loginData });
           } else {
             alert(
               "Login invalid, please check your entries or press 'Register' to create an account."
@@ -234,38 +232,131 @@ function RegistrationScreen({ navigation }) {
         testID="register-button"
         onPress={() => {
           for (var i = 0; i < flags.length; i++) {
-            console.log(flags);
             if (flags[i] == true) {
               gate = gate + 1;
             }
           }
-          console.log(gate);
           if (gate != flags.length) {
             alert("All fields must be filled in correctly.");
           } else {
+            loginData.pop();
             loginData.push(newUser);
-            navigation.navigate("Regiment Selection");
+            navigation.navigate("Regiment Selection", { loginData: loginData });
           }
         }}
       ></Button>
     </>
   );
 }
+function EditingScreen({ navigation, route }) {
+  let { loginData } = route.params;
 
-function SelectionScreen({ navigation }) {
+  let [mon, setMon] = useState("Push");
+  let [tue, setTue] = useState("Pull");
+  let [wed, setWed] = useState("Legs");
+  let [thu, setThu] = useState("Rest");
+  let [fri, setFri] = useState("Legs");
+  let [sat, setSat] = useState("Shoulders");
+  let [sun, setSun] = useState("Rest");
+
+  let selections = [mon, tue, wed, thu, fri, sat, sun];
+  let newRegiment = [];
+
+  function handleSelections(value) {
+    switch (value) {
+      case "Push":
+        return 0;
+      case "Pull":
+        return 1;
+      case "Legs":
+        return 2;
+      case "Shoulders":
+        return 3;
+      case "Rest":
+        return 4;
+    }
+  }
+
+  // const colors = ["tomato", "thistle", "skyblue", "teal"];
+  return (
+    <>
+      {/* <SwiperFlatList
+        index={2}
+        showPagination
+        data={colors}
+        renderItem={({ item }) => (
+          <View style={[styles.child, { backgroundColor: item }]}>
+            <Text style={styles.text}>{item}</Text>
+          </View>
+        )}
+      /> */}
+      <Button title="Test" onPress={() => console.log(loginData)}></Button>
+      <TextInput value={mon} onChangeText={setMon}></TextInput>
+      <TextInput value={tue} onChangeText={setTue}></TextInput>
+      <TextInput value={wed} onChangeText={setWed}></TextInput>
+      <TextInput value={thu} onChangeText={setThu}></TextInput>
+      <TextInput value={fri} onChangeText={setFri}></TextInput>
+      <TextInput value={sat} onChangeText={setSat}></TextInput>
+      <TextInput value={sun} onChangeText={setSun}></TextInput>
+
+      <Button
+        title="Save Regiment"
+        onPress={() => {
+          console.log(selections);
+          newRegiment = selections.map(handleSelections);
+          loginData[0].usrRegiment.push(newRegiment);
+        }}
+      ></Button>
+
+      <Button
+        title="Return to Workout Selection"
+        onPress={() => {
+          navigation.navigate("Regiment Selection", {
+            loginData: loginData,
+          });
+        }}
+      ></Button>
+    </>
+  );
+}
+
+function SelectionScreen({ navigation, route }) {
+  let { usrRegiment, loginData } = route.params;
+  let defaultReg = [0, 1, 2, 3, 4];
+  let madeReg = false;
+  let currentReg = [];
+
+  if (loginData[0].usrRegiment.length != 0) {
+    currentReg.push(loginData[0].usrRegiment);
+    madeReg = true;
+  } else {
+    console.log("current user has made no regiment");
+  }
+
   return (
     <>
       <Text>This is the Workout Selection Screen</Text>
       <Button
         title="Edit Regiment"
         onPress={() => {
-          navigation.navigate("Regiment Editor");
+          navigation.navigate("Regiment Editor", { loginData: loginData });
         }}
       ></Button>
       <Button
-        title="Begin Workout"
+        title="Begin Custom Workout"
         onPress={() => {
-          // navigation.navigate("Workout");
+          if (madeReg) {
+            console.log(loginData[0].usrRegiment);
+            // navigation.navigate("Workout", usrRegiment);
+          } else {
+            alert("You must make a custom regiment first!");
+          }
+        }}
+      ></Button>
+      <Button
+        title="Begin Generic Workout"
+        onPress={() => {
+          navigation.navigate("Workout");
         }}
       ></Button>
       <Button
@@ -278,42 +369,6 @@ function SelectionScreen({ navigation }) {
         title="Log Out"
         onPress={() => {
           navigation.navigate("Login");
-        }}
-      ></Button>
-    </>
-  );
-}
-function EditingScreen({ navigation, setCurrCustRegiment }) {
-  let [mon, setMon] = useState(0);
-  let [tue, setTue] = useState(0);
-  let [wed, setWed] = useState(0);
-  let [thu, setThu] = useState(0);
-  let [fri, setFri] = useState(0);
-  let [sat, setSat] = useState(0);
-  let [sun, setSun] = useState(0);
-
-  return (
-    <>
-      <TextInput value={mon} onChangeText={setMon}></TextInput>
-      <TextInput value={tue} onChangeText={setTue}></TextInput>
-      <TextInput value={wed} onChangeText={setWed}></TextInput>
-      <TextInput value={thu} onChangeText={setThu}></TextInput>
-      <TextInput value={fri} onChangeText={setFri}></TextInput>
-      <TextInput value={sat} onChangeText={setSat}></TextInput>
-      <TextInput value={sun} onChangeText={setSun}></TextInput>
-
-      <Button
-        title="Save Regiment"
-        onPress={() => {
-          console.log(loginData);
-          // setCurrCustRegiment(mon, tue, wed, thu, fri, sat, sun);
-        }}
-      ></Button>
-
-      <Button
-        title="Return to Workout Selection"
-        onPress={() => {
-          navigation.navigate("Regiment Selection");
         }}
       ></Button>
     </>
@@ -334,10 +389,29 @@ function GoalsScreen({ navigation }) {
   );
 }
 
-function CurrentExerciseScreen({ navigation }) {
+function CurrentExerciseScreen({ navigation, route }) {
+  let [reps, setReps] = useState(0);
   return (
     <>
       <Text>This is the Workout Screen</Text>
+      <Text>Current Exercise: {name}</Text>
+      <Text>{reps}</Text>
+      <View style={styles.fixToText}>
+        <Button
+          onPress={() => {
+            setReps(reps + 1);
+          }}
+        >
+          +1 Rep
+        </Button>
+        <Button
+          onPress={() => {
+            setReps((reps = 0));
+          }}
+        >
+          Set Reps to 0
+        </Button>
+      </View>
       <Button
         title="Return to Workout Selection"
         onPress={() => {
@@ -348,4 +422,8 @@ function CurrentExerciseScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "darkgrey" },
+  child: { justifyContent: "center" },
+  text: { textAlign: "center" },
+});
