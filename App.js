@@ -1,14 +1,22 @@
-import { useState, useEffect, useCallback, useRef, Dimensions } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { StatusBar } from "expo-status-bar";
-import { SafeAreaView, FlatList, StyleSheet, Text, View } from "react-native";
+import {
+  SafeAreaView,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+} from "react-native";
 import { CheckBox, Input, Button } from "@rneui/themed";
 import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TextInput } from "react-native-web";
+import { TextInput, TouchableOpacity } from "react-native-web";
 import { SwiperFlatList } from "react-native-swiper-flatlist";
-import { log } from "react-native-reanimated";
+
+import LoginScreen from "./screens/LoginScreen";
 
 const Stack = createNativeStackNavigator();
 const loginData = [];
@@ -29,7 +37,7 @@ const defaultUser = {
 //   usrGoals: [],
 // };
 
-const workouts = [
+const defaultWorkouts = [
   {
     key: 0,
     workout: "push",
@@ -80,6 +88,7 @@ export default function App() {
           name="Login"
           component={LoginScreen}
           options={{ title: "Resistence Trainer" }}
+          initialParams={{ loginData: loginData }}
         />
         <Stack.Screen name="Registration" component={RegistrationScreen} />
         <Stack.Screen name="Regiment Selection" component={SelectionScreen} />
@@ -91,40 +100,7 @@ export default function App() {
   );
 }
 
-function LoginScreen({ navigation }) {
-  let [username, setUsername] = useState(" ");
-  let [password, setPassword] = useState(" ");
-  return (
-    <>
-      <Input placeholder="Username" onChangeText={setUsername}></Input>
-      <Input placeholder="Password" onChangeText={setPassword}></Input>
-      <Button
-        color="#000"
-        title="Login"
-        testID="login-button"
-        onPress={() => {
-          console.log(`Username: ${username} Password: ${password}`);
-          let validUser = (input) => input.username === username;
-          let validPass = (input) => input.password === password;
-          if (loginData.some(validUser) && loginData.some(validPass)) {
-            navigation.navigate("Regiment Selection", { loginData: loginData });
-          } else {
-            alert(
-              "Login invalid, please check your entries or press 'Register' to create an account."
-            );
-          }
-        }}
-      ></Button>
-      <Button
-        title="Register"
-        onPress={() => {
-          navigation.navigate("Registration");
-        }}
-      ></Button>
-    </>
-  );
-}
-function RegistrationScreen({ navigation }) {
+function RegistrationScreen({ navigation, route }) {
   let [username, setUsername] = useState("");
   let [password, setPassword] = useState("");
   let [confirmPass, setConfrimPass] = useState("");
@@ -249,18 +225,19 @@ function RegistrationScreen({ navigation }) {
     </>
   );
 }
+
 function EditingScreen({ navigation, route }) {
   let { loginData } = route.params;
 
-  let [mon, setMon] = useState("Push");
-  let [tue, setTue] = useState("Pull");
-  let [wed, setWed] = useState("Legs");
-  let [thu, setThu] = useState("Rest");
-  let [fri, setFri] = useState("Legs");
-  let [sat, setSat] = useState("Shoulders");
-  let [sun, setSun] = useState("Rest");
+  let [saved, setSave] = useState(false);
+  const scrollRef1 = React.useRef(null);
+  const scrollRef2 = React.useRef(null);
+  const scrollRef3 = React.useRef(null);
+  const scrollRef4 = React.useRef(null);
+  const scrollRef5 = React.useRef(null);
+  const scrollRef6 = React.useRef(null);
+  const scrollRef7 = React.useRef(null);
 
-  let selections = [mon, tue, wed, thu, fri, sat, sun];
   let newRegiment = [];
 
   function clearArray(array) {
@@ -271,102 +248,169 @@ function EditingScreen({ navigation, route }) {
 
   function handleSelections(value) {
     switch (value) {
-      case "Push":
+      case 0:
         return 0;
-      case "Pull":
+      case 1:
         return 1;
-      case "Legs":
+      case 2:
         return 2;
-      case "Shoulders":
+      case 3:
         return 3;
-      case "Rest":
+      case 4:
         return 4;
     }
   }
 
-  // const colors = ["tomato", "thistle", "skyblue", "teal"];
+  const regDays = ["Push", "Pull", "Legs", "Shoulders", "Rest"];
   return (
     <>
-      {/* <SwiperFlatList
-        index={2}
-        showPagination
-        data={colors}
-        renderItem={({ item }) => (
-          <View style={[styles.child, { backgroundColor: item }]}>
-            <Text style={styles.text}>{item}</Text>
-          </View>
-        )}
-      /> */}
-      <Button title="Test" onPress={() => console.log(loginData)}></Button>
-      <TextInput value={mon} onChangeText={setMon}></TextInput>
-      <TextInput value={tue} onChangeText={setTue}></TextInput>
-      <TextInput value={wed} onChangeText={setWed}></TextInput>
-      <TextInput value={thu} onChangeText={setThu}></TextInput>
-      <TextInput value={fri} onChangeText={setFri}></TextInput>
-      <TextInput value={sat} onChangeText={setSat}></TextInput>
-      <TextInput value={sun} onChangeText={setSun}></TextInput>
+      <View style={styles.container}>
+        <Text>Sunday</Text>
+        <SwiperFlatList
+          ref={scrollRef1}
+          index={0}
+          data={regDays}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={[styles.child]}>
+              <Text style={styles.text}>{item}</Text>
+            </TouchableOpacity>
+          )}
+        />
 
-      <Button
-        title="Save Regiment"
-        onPress={() => {
-          console.log(selections);
-          newRegiment = selections.map(handleSelections);
-          if (loginData[0].usrRegiment.length != 0) {
-            clearArray(loginData[0].usrRegiment);
-            loginData[0].usrRegiment.push(newRegiment);
-          } else {
-            loginData[0].usrRegiment.push(newRegiment);
-          }
-        }}
-      ></Button>
+        <Text>Monday</Text>
+        <SwiperFlatList
+          ref={scrollRef2}
+          index={1}
+          data={regDays}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={[styles.child]}>
+              <Text style={styles.text}>{item}</Text>
+            </TouchableOpacity>
+          )}
+        />
+        <Text>Tuesday</Text>
+        <SwiperFlatList
+          ref={scrollRef3}
+          index={2}
+          data={regDays}
+          renderItem={({ item }) => (
+            <View style={[styles.child]}>
+              <Text style={styles.text}>{item}</Text>
+            </View>
+          )}
+        />
+        <Text>Wednesday</Text>
+        <SwiperFlatList
+          ref={scrollRef4}
+          index={3}
+          data={regDays}
+          renderItem={({ item }) => (
+            <View style={[styles.child]}>
+              <Text style={styles.text}>{item}</Text>
+            </View>
+          )}
+        />
+        <Text>Thursday</Text>
+        <SwiperFlatList
+          ref={scrollRef5}
+          index={4}
+          data={regDays}
+          renderItem={({ item }) => (
+            <View style={[styles.child]}>
+              <Text style={styles.text}>{item}</Text>
+            </View>
+          )}
+        />
+        <Text>Friday</Text>
+        <SwiperFlatList
+          ref={scrollRef6}
+          index={0}
+          data={regDays}
+          renderItem={({ item }) => (
+            <View style={[styles.child]}>
+              <Text style={styles.text}>{item}</Text>
+            </View>
+          )}
+        />
+        <Text>Saturday</Text>
+        <SwiperFlatList
+          ref={scrollRef7}
+          index={1}
+          data={regDays}
+          renderItem={({ item }) => (
+            <View style={[styles.child]}>
+              <Text style={styles.text}>{item}</Text>
+            </View>
+          )}
+        />
+        <Button
+          title="Save Regiment"
+          onPress={() => {
+            let selections = [
+              scrollRef1.current.getCurrentIndex(),
+              scrollRef2.current.getCurrentIndex(),
+              scrollRef3.current.getCurrentIndex(),
+              scrollRef4.current.getCurrentIndex(),
+              scrollRef5.current.getCurrentIndex(),
+              scrollRef6.current.getCurrentIndex(),
+              scrollRef7.current.getCurrentIndex(),
+            ];
+            console.log(selections);
+            newRegiment = selections.map(handleSelections);
+            if (loginData[0].usrRegiment.length != 0) {
+              clearArray(loginData[0].usrRegiment);
+              loginData[0].usrRegiment.push(newRegiment);
+            } else {
+              loginData[0].usrRegiment.push(newRegiment);
+            }
+            setSave(true);
+          }}
+        ></Button>
 
-      <Button
-        title="Return to Workout Selection"
-        onPress={() => {
-          navigation.navigate("Regiment Selection", {
-            loginData: loginData,
-          });
-        }}
-      ></Button>
+        <Button
+          disabled={saved}
+          title="Return to Workout Selection"
+          onPress={() => {
+            navigation.navigate("Regiment Selection", {
+              loginData: loginData,
+            });
+          }}
+        ></Button>
+      </View>
     </>
   );
 }
 
 function SelectionScreen({ navigation, route }) {
   let { loginData } = route.params;
-  let defaultReg = [0, 1, 2, 3, 4];
-  let madeReg = false;
-
-  if (loginData[0].usrRegiment.length != 0) {
-    madeReg = true;
-  } else {
-    console.log("current user has made no regiment");
-  }
+  let [madeReg, updateMadeReg] = useState(true);
+  useEffect(() => {
+    if (loginData[0].usrRegiment.length != 0) {
+      updateMadeReg(false);
+    } else {
+      console.log("current user has made no regiment");
+    }
+  });
 
   return (
     <>
       <Text>This is the Workout Selection Screen</Text>
       <Button
-        title="Edit Regiment"
+        title={madeReg ? "Create Regiment" : "Edit Regiment"}
         onPress={() => {
           navigation.navigate("Regiment Editor", { loginData: loginData });
         }}
       ></Button>
       <Button
         title="Begin Custom Workout"
+        disabled={madeReg}
         onPress={() => {
-          if (madeReg) {
+          if (!madeReg) {
             // console.log(loginData[0].usrRegiment);
             navigation.navigate("Workout", { loginData: loginData });
           } else {
             alert("You must make a custom regiment first!");
           }
-        }}
-      ></Button>
-      <Button
-        title="Begin Generic Workout"
-        onPress={() => {
-          navigation.navigate("Workout");
         }}
       ></Button>
       <Button
@@ -400,18 +444,21 @@ function GoalsScreen({ navigation }) {
 }
 
 function CurrentExerciseScreen({ navigation, route }) {
-  let [reps, setReps] = useState(0);
   let { loginData } = route.params;
+  let [reps, setReps] = useState(0);
   let currentReg = loginData[0].usrRegiment;
   const d = new Date();
   let day = d.getDay();
   let regIndex = currentReg[0][day];
+  let workouts = [];
+
   switch (regIndex) {
     case 0:
+      workouts = ["Push-Ups", "Incline Bench-Press", "Flat Bench-Press"];
       return (
         <>
           <Text>This is the Push Day Screen</Text>
-          <Text>Current Exercise: </Text>
+          <Text>Current Exercise: {workouts[1]}</Text>
           <Text>{reps}</Text>
           <View>
             <Button
@@ -570,8 +617,8 @@ function CurrentExerciseScreen({ navigation, route }) {
   }
 }
 
+const { width } = Dimensions.get("window");
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "darkgrey" },
-  child: { justifyContent: "center" },
-  text: { textAlign: "center" },
+  container: { backgroundColor: "white" },
+  text: { width: width, fontSize: width * 0.1, textAlign: "center" },
 });
