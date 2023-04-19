@@ -8,6 +8,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TextInput } from "react-native-web";
 import { SwiperFlatList } from "react-native-swiper-flatlist";
+import { log } from "react-native-reanimated";
 
 const Stack = createNativeStackNavigator();
 const loginData = [];
@@ -262,6 +263,12 @@ function EditingScreen({ navigation, route }) {
   let selections = [mon, tue, wed, thu, fri, sat, sun];
   let newRegiment = [];
 
+  function clearArray(array) {
+    for (let i = 0; i <= array.length + 1; i++) {
+      array.pop();
+    }
+  }
+
   function handleSelections(value) {
     switch (value) {
       case "Push":
@@ -304,7 +311,12 @@ function EditingScreen({ navigation, route }) {
         onPress={() => {
           console.log(selections);
           newRegiment = selections.map(handleSelections);
-          loginData[0].usrRegiment.push(newRegiment);
+          if (loginData[0].usrRegiment.length != 0) {
+            clearArray(loginData[0].usrRegiment);
+            loginData[0].usrRegiment.push(newRegiment);
+          } else {
+            loginData[0].usrRegiment.push(newRegiment);
+          }
         }}
       ></Button>
 
@@ -321,13 +333,11 @@ function EditingScreen({ navigation, route }) {
 }
 
 function SelectionScreen({ navigation, route }) {
-  let { usrRegiment, loginData } = route.params;
+  let { loginData } = route.params;
   let defaultReg = [0, 1, 2, 3, 4];
   let madeReg = false;
-  let currentReg = [];
 
   if (loginData[0].usrRegiment.length != 0) {
-    currentReg.push(loginData[0].usrRegiment);
     madeReg = true;
   } else {
     console.log("current user has made no regiment");
@@ -346,8 +356,8 @@ function SelectionScreen({ navigation, route }) {
         title="Begin Custom Workout"
         onPress={() => {
           if (madeReg) {
-            console.log(loginData[0].usrRegiment);
-            // navigation.navigate("Workout", usrRegiment);
+            // console.log(loginData[0].usrRegiment);
+            navigation.navigate("Workout", { loginData: loginData });
           } else {
             alert("You must make a custom regiment first!");
           }
@@ -391,35 +401,173 @@ function GoalsScreen({ navigation }) {
 
 function CurrentExerciseScreen({ navigation, route }) {
   let [reps, setReps] = useState(0);
-  return (
-    <>
-      <Text>This is the Workout Screen</Text>
-      <Text>Current Exercise: {name}</Text>
-      <Text>{reps}</Text>
-      <View style={styles.fixToText}>
-        <Button
-          onPress={() => {
-            setReps(reps + 1);
-          }}
-        >
-          +1 Rep
-        </Button>
-        <Button
-          onPress={() => {
-            setReps((reps = 0));
-          }}
-        >
-          Set Reps to 0
-        </Button>
-      </View>
-      <Button
-        title="Return to Workout Selection"
-        onPress={() => {
-          navigation.navigate("Regiment Selection");
-        }}
-      ></Button>
-    </>
-  );
+  let { loginData } = route.params;
+  let currentReg = loginData[0].usrRegiment;
+  const d = new Date();
+  let day = d.getDay();
+  let regIndex = currentReg[0][day];
+  switch (regIndex) {
+    case 0:
+      return (
+        <>
+          <Text>This is the Push Day Screen</Text>
+          <Text>Current Exercise: </Text>
+          <Text>{reps}</Text>
+          <View>
+            <Button
+              onPress={() => {
+                setReps(reps + 1);
+              }}
+            >
+              +1 Rep
+            </Button>
+            <Button
+              onPress={() => {
+                setReps((reps = 0));
+              }}
+            >
+              Set Reps to 0
+            </Button>
+          </View>
+          <Button
+            title="Return to Workout Selection"
+            onPress={() => {
+              navigation.navigate("Regiment Selection", {
+                loginData: loginData,
+              });
+            }}
+          ></Button>
+        </>
+      );
+    case 1:
+      return (
+        <>
+          <Text>This is the Push Day Screen</Text>
+          <Text>Current Exercise: </Text>
+          <Text>{reps}</Text>
+          <View>
+            <Button
+              onPress={() => {
+                setReps(reps + 1);
+              }}
+            >
+              +1 Rep
+            </Button>
+            <Button
+              onPress={() => {
+                setReps((reps = 0));
+              }}
+            >
+              Set Reps to 0
+            </Button>
+          </View>
+          <Button
+            title="Return to Workout Selection"
+            onPress={() => {
+              navigation.navigate("Regiment Selection", {
+                loginData: loginData,
+              });
+            }}
+          ></Button>
+        </>
+      );
+    case 2:
+      return (
+        <>
+          <Text>This is the Leg Day Screen</Text>
+          <Text>Current Exercise: </Text>
+          <Text>{reps}</Text>
+          <View>
+            <Button
+              onPress={() => {
+                setReps(reps + 1);
+              }}
+            >
+              +1 Rep
+            </Button>
+            <Button
+              onPress={() => {
+                setReps((reps = 0));
+              }}
+            >
+              Set Reps to 0
+            </Button>
+          </View>
+          <Button
+            title="Return to Workout Selection"
+            onPress={() => {
+              navigation.navigate("Regiment Selection", {
+                loginData: loginData,
+              });
+            }}
+          ></Button>
+        </>
+      );
+    case 3:
+      return (
+        <>
+          <Text>This is the Shoulders Day Screen</Text>
+          <Text>Current Exercise: </Text>
+          <Text>{reps}</Text>
+          <View>
+            <Button
+              onPress={() => {
+                setReps(reps + 1);
+              }}
+            >
+              +1 Rep
+            </Button>
+            <Button
+              onPress={() => {
+                setReps((reps = 0));
+              }}
+            >
+              Set Reps to 0
+            </Button>
+          </View>
+          <Button
+            title="Return to Workout Selection"
+            onPress={() => {
+              navigation.navigate("Regiment Selection", {
+                loginData: loginData,
+              });
+            }}
+          ></Button>
+        </>
+      );
+    case 4:
+      return (
+        <>
+          <Text>This is the Rest Day Screen</Text>
+          <Text>Current Exercise: </Text>
+          <Text>{reps}</Text>
+          <View>
+            <Button
+              onPress={() => {
+                setReps(reps + 1);
+              }}
+            >
+              +1 Rep
+            </Button>
+            <Button
+              onPress={() => {
+                setReps((reps = 0));
+              }}
+            >
+              Set Reps to 0
+            </Button>
+          </View>
+          <Button
+            title="Return to Workout Selection"
+            onPress={() => {
+              navigation.navigate("Regiment Selection", {
+                loginData: loginData,
+              });
+            }}
+          ></Button>
+        </>
+      );
+  }
 }
 
 const styles = StyleSheet.create({
