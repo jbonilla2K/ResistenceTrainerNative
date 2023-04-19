@@ -229,7 +229,7 @@ function RegistrationScreen({ navigation, route }) {
 function EditingScreen({ navigation, route }) {
   let { loginData } = route.params;
 
-  let [saved, setSave] = useState(false);
+  let [saved, setSave] = useState(true);
   const scrollRef1 = React.useRef(null);
   const scrollRef2 = React.useRef(null);
   const scrollRef3 = React.useRef(null);
@@ -271,9 +271,9 @@ function EditingScreen({ navigation, route }) {
           index={0}
           data={regDays}
           renderItem={({ item }) => (
-            <TouchableOpacity style={[styles.child]}>
+            <View style={[styles.child]}>
               <Text style={styles.text}>{item}</Text>
-            </TouchableOpacity>
+            </View>
           )}
         />
 
@@ -283,9 +283,9 @@ function EditingScreen({ navigation, route }) {
           index={1}
           data={regDays}
           renderItem={({ item }) => (
-            <TouchableOpacity style={[styles.child]}>
+            <View style={[styles.child]}>
               <Text style={styles.text}>{item}</Text>
-            </TouchableOpacity>
+            </View>
           )}
         />
         <Text>Tuesday</Text>
@@ -363,7 +363,7 @@ function EditingScreen({ navigation, route }) {
             } else {
               loginData[0].usrRegiment.push(newRegiment);
             }
-            setSave(true);
+            setSave(false);
           }}
         ></Button>
 
