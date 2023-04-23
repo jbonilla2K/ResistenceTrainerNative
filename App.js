@@ -37,34 +37,6 @@ const defaultUser = {
 //   usrGoals: [],
 // };
 
-const defaultWorkouts = [
-  {
-    key: 0,
-    workout: "push",
-    exercises: ["Push-Ups", "Incline Bench-Press", "Flat Bench-Press"],
-  },
-  {
-    key: 1,
-    workout: "pull",
-    exercises: ["Pull-Ups", "Barbell Rows", "Cable Pulldowns"],
-  },
-  {
-    key: 2,
-    workout: "legs",
-    exercises: ["Lunges", "Front Squats", "Squats"],
-  },
-  {
-    key: 3,
-    workout: "shoulders",
-    exercises: ["Teacups", "Lateral Raise", "Face Pulls"],
-  },
-  {
-    key: 4,
-    workout: "rest",
-    exercises: ["Toe Touch", "Dead Hang", "Shoulder Circles"],
-  },
-];
-
 export default function App() {
   useEffect(() => {
     async function getValue() {
@@ -114,7 +86,18 @@ function RegistrationScreen({ navigation, route }) {
     lastName: lName,
     email: email,
     usrRegiment: [],
-    usrGoals: [{ push: [] }, { pull: [] }, { legs: [] }, { shoulders: [] }],
+    usrGoals: [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [9, 10, 11],
+    ],
+    usrMaxes: [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [9, 10, 11],
+    ],
   };
   let flags = [false, false, false, false];
   let gate = 0;
@@ -383,6 +366,7 @@ function EditingScreen({ navigation, route }) {
 
 function SelectionScreen({ navigation, route }) {
   let { loginData } = route.params;
+  console.log(loginData);
   let [madeReg, updateMadeReg] = useState(true);
   useEffect(() => {
     if (loginData[0].usrRegiment.length != 0) {
@@ -430,10 +414,121 @@ function SelectionScreen({ navigation, route }) {
 
 function GoalsScreen({ navigation, route }) {
   let { loginData } = route.params;
-  console.log(loginData);
+
+  let usrPushGoals = loginData[0].usrGoals[0];
+  let usrPullGoals = loginData[0].usrGoals[1];
+  let usrLegGoals = loginData[0].usrGoals[2];
+  let usrShoGoals = loginData[0].usrGoals[3];
+
+  let usrPushMaxes = loginData[0].usrMaxes[0];
+  let usrPullMaxes = loginData[0].usrMaxes[1];
+  let usrLegMaxes = loginData[0].usrMaxes[2];
+  let usrShoMaxes = loginData[0].usrMaxes[3];
+
+  let [goal1, setGoal1] = useState();
+  let [goal2, setGoal2] = useState();
+  let [goal3, setGoal3] = useState();
+
+  let [dispGoals, setDispGoals] = useState([]);
+  let [dispMaxes, setDispMaxes] = useState([]);
+  let [dispExercise, setDispExercise] = useState([]);
+  let [curGroup, setCurGroup] = useState("No Group Selected");
+  let [gate, openGate] = useState(true);
+
+  function clearArray(array) {
+    for (let i = 0; i <= array.length + 1; i++) {
+      array.pop();
+    }
+  }
+
   return (
     <>
-      <Text>This is the Goals Screen</Text>
+      <Text>Select a group of Goals to view and edit.</Text>
+      <Button
+        title="View Push Day Exercises"
+        onPress={() => {
+          setCurGroup("Save Push Workout Goals");
+          setDispGoals(usrPushGoals);
+          setDispMaxes(usrPushMaxes);
+          setDispExercise([
+            "Incline Benchpress",
+            "Flat Benchpress",
+            "Chest Flys",
+          ]);
+          setGoal1(0);
+          setGoal2(0);
+          setGoal3(0);
+          openGate(false);
+        }}
+      ></Button>
+      <Button
+        title="View Pull Day Exercises"
+        onPress={() => {
+          setCurGroup("Save Pull Workout Goals");
+          setDispGoals(usrPullGoals);
+          setDispMaxes(usrPullMaxes);
+          setDispExercise(["Barbell Rows", "Lat Pull Down", "Cable Rows"]);
+          setGoal1(0);
+          setGoal2(0);
+          setGoal3(0);
+          openGate(false);
+        }}
+      ></Button>
+      <Button
+        title="View Leg Day Exercises"
+        onPress={() => {
+          setCurGroup("Save Leg Workout Goals");
+          setDispGoals(usrLegGoals);
+          setDispMaxes(usrLegMaxes);
+          setDispExercise(["Front Squat", "Back Squat", "Deadlift"]);
+          setGoal1(0);
+          setGoal2(0);
+          setGoal3(0);
+          openGate(false);
+        }}
+      ></Button>
+      <Button
+        title="View Shoulder Day Exercises"
+        onPress={() => {
+          setCurGroup("Save Shoulders Workout Goals");
+          setDispGoals(usrShoGoals);
+          setDispMaxes(usrShoMaxes);
+          setDispExercise(["Lateral Raise", "Overhead Press", "Face Pulls"]);
+          setGoal1(0);
+          setGoal2(0);
+          setGoal3(0);
+          openGate(false);
+        }}
+      ></Button>
+      <Text>{dispExercise[0]}</Text>
+      <Text>{dispMaxes[0]}</Text>
+      <TextInput placeholder={dispGoals[0]} onChangeText={setGoal1}></TextInput>
+      <Text>{dispExercise[1]}</Text>
+      <Text>{dispMaxes[1]}</Text>
+      <TextInput placeholder={dispGoals[1]} onChangeText={setGoal2}></TextInput>
+      <Text>{dispExercise[2]}</Text>
+      <Text>{dispMaxes[2]}</Text>
+      <TextInput placeholder={dispGoals[2]} onChangeText={setGoal3}></TextInput>
+      <Button
+        title={curGroup}
+        disabled={gate}
+        onPress={() => {
+          if (curGroup == "Save Push Workout Goals") {
+            clearArray(loginData[0].usrGoals[0]);
+            loginData[0].usrGoals[0].push(goal1, goal2, goal3);
+          } else if (curGroup == "Save Pull Workout Goals") {
+            clearArray(loginData[0].usrGoals[1]);
+            loginData[0].usrGoals[1].push(goal1, goal2, goal3);
+          } else if (curGroup == "Save Leg Workout Goals") {
+            clearArray(loginData[0].usrGoals[2]);
+            loginData[0].usrGoals[2].push(goal1, goal2, goal3);
+          } else if (curGroup == "Save Shoulder Workout Goals") {
+            clearArray(loginData[0].usrGoals[3]);
+            loginData[0].usrGoals[3].push(goal1, goal2, goal3);
+          }
+          openGate(true);
+        }}
+      ></Button>
       <Button
         title="Return to Workout Selection"
         onPress={() => {
@@ -449,10 +544,12 @@ function CurrentExerciseScreen({ navigation, route }) {
 
   let [reps, setReps] = useState(0);
 
-  let currentReg = loginData[0].usrRegiment;
+  let usrReg = loginData[0].usrRegiment;
   const d = new Date();
   let day = d.getDay();
-  let regIndex = currentReg[0][day];
+  let regIndex = usrReg[0][day];
+
+  let [curGoals, setCurGoals] = useState([]);
 
   switch (regIndex) {
     case 0:
@@ -461,6 +558,7 @@ function CurrentExerciseScreen({ navigation, route }) {
       const flatBench = 2;
       const chestFly = 3;
       let [curPush, setCurPush] = useState(pushUps);
+      console.log(loginData[0].usrGoals[0]);
 
       if (curPush === pushUps) {
         return (
