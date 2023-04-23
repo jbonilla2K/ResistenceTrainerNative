@@ -114,7 +114,7 @@ function RegistrationScreen({ navigation, route }) {
     lastName: lName,
     email: email,
     usrRegiment: [],
-    usrGoals: [],
+    usrGoals: [{ push: [] }, { pull: [] }, { legs: [] }, { shoulders: [] }],
   };
   let flags = [false, false, false, false];
   let gate = 0;
@@ -406,7 +406,6 @@ function SelectionScreen({ navigation, route }) {
         disabled={madeReg}
         onPress={() => {
           if (!madeReg) {
-            // console.log(loginData[0].usrRegiment);
             navigation.navigate("Workout", { loginData: loginData });
           } else {
             alert("You must make a custom regiment first!");
@@ -416,7 +415,7 @@ function SelectionScreen({ navigation, route }) {
       <Button
         title="View Goals"
         onPress={() => {
-          navigation.navigate("Goals");
+          navigation.navigate("Goals", { loginData: loginData });
         }}
       ></Button>
       <Button
@@ -429,14 +428,16 @@ function SelectionScreen({ navigation, route }) {
   );
 }
 
-function GoalsScreen({ navigation }) {
+function GoalsScreen({ navigation, route }) {
+  let { loginData } = route.params;
+  console.log(loginData);
   return (
     <>
       <Text>This is the Goals Screen</Text>
       <Button
         title="Return to Workout Selection"
         onPress={() => {
-          navigation.navigate("Regiment Selection");
+          navigation.navigate("Regiment Selection", { loginData: loginData });
         }}
       ></Button>
     </>
@@ -445,165 +446,638 @@ function GoalsScreen({ navigation }) {
 
 function CurrentExerciseScreen({ navigation, route }) {
   let { loginData } = route.params;
+
   let [reps, setReps] = useState(0);
+
   let currentReg = loginData[0].usrRegiment;
   const d = new Date();
   let day = d.getDay();
   let regIndex = currentReg[0][day];
-  let workouts = [];
 
   switch (regIndex) {
     case 0:
-      workouts = ["Push-Ups", "Incline Bench-Press", "Flat Bench-Press"];
-      return (
-        <>
-          <Text>This is the Push Day Screen</Text>
-          <Text>Current Exercise: {workouts[1]}</Text>
-          <Text>{reps}</Text>
-          <View>
+      const pushUps = 0;
+      const inclineBench = 1;
+      const flatBench = 2;
+      const chestFly = 3;
+      let [curPush, setCurPush] = useState(pushUps);
+
+      if (curPush === pushUps) {
+        return (
+          <>
+            <Text>Warmp up your push group with some Push Ups.</Text>
+            <Text>{reps}</Text>
+            <View>
+              <Button
+                onPress={() => {
+                  setReps(reps + 1);
+                }}
+              >
+                +1 Rep
+              </Button>
+              <Button
+                onPress={() => {
+                  setReps((reps = 0));
+                }}
+              >
+                Set Reps to 0
+              </Button>
+            </View>
             <Button
+              title="Next Exercise"
               onPress={() => {
-                setReps(reps + 1);
-              }}
-            >
-              +1 Rep
-            </Button>
-            <Button
-              onPress={() => {
+                setCurPush(inclineBench);
                 setReps((reps = 0));
               }}
-            >
-              Set Reps to 0
-            </Button>
-          </View>
-          <Button
-            title="Return to Workout Selection"
-            onPress={() => {
-              navigation.navigate("Regiment Selection", {
-                loginData: loginData,
-              });
-            }}
-          ></Button>
-        </>
-      );
+            ></Button>
+            <Button
+              title="Return to Workout Selection"
+              onPress={() => {
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }}
+            ></Button>
+          </>
+        );
+      } else if (curPush === inclineBench) {
+        return (
+          <>
+            <Text>Now for some Incline Bench Press.</Text>
+            <Text>{reps}</Text>
+            <View>
+              <Button
+                onPress={() => {
+                  setReps(reps + 1);
+                }}
+              >
+                +1 Rep
+              </Button>
+              <Button
+                onPress={() => {
+                  setReps((reps = 0));
+                }}
+              >
+                Set Reps to 0
+              </Button>
+            </View>
+            <Button
+              title="Next Exercise"
+              onPress={() => {
+                setCurPush(flatBench);
+                setReps((reps = 0));
+              }}
+            ></Button>
+            <Button
+              title="Return to Workout Selection"
+              onPress={() => {
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }}
+            ></Button>
+          </>
+        );
+      } else if (curPush === flatBench) {
+        return (
+          <>
+            <Text>Flat Bench Press.</Text>
+            <Text>{reps}</Text>
+            <View>
+              <Button
+                onPress={() => {
+                  setReps(reps + 1);
+                }}
+              >
+                +1 Rep
+              </Button>
+              <Button
+                onPress={() => {
+                  setReps((reps = 0));
+                }}
+              >
+                Set Reps to 0
+              </Button>
+            </View>
+            <Button
+              title="Next Exercise"
+              onPress={() => {
+                setCurPush(chestFly);
+                setReps((reps = 0));
+              }}
+            ></Button>
+            <Button
+              title="Return to Workout Selection"
+              onPress={() => {
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }}
+            ></Button>
+          </>
+        );
+      } else if (curPush === chestFly) {
+        return (
+          <>
+            <Text>Now for some Chest Flys.</Text>
+            <Text>{reps}</Text>
+            <View>
+              <Button
+                onPress={() => {
+                  setReps(reps + 1);
+                }}
+              >
+                +1 Rep
+              </Button>
+              <Button
+                onPress={() => {
+                  setReps((reps = 0));
+                }}
+              >
+                Set Reps to 0
+              </Button>
+            </View>
+            <Button
+              title="Complete Workout"
+              onPress={() => {
+                setReps((reps = 0));
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }}
+            ></Button>
+          </>
+        );
+      }
     case 1:
-      return (
-        <>
-          <Text>This is the Push Day Screen</Text>
-          <Text>Current Exercise: </Text>
-          <Text>{reps}</Text>
-          <View>
+      const pullUps = 0;
+      const barbellRows = 1;
+      const pullDowns = 2;
+      const cableRows = 3;
+      let [curPull, setCurPull] = useState(pullUps);
+
+      if (curPull === pullUps) {
+        return (
+          <>
+            <Text>Warmp up your push group with some Pull Ups.</Text>
+            <Text>{reps}</Text>
+            <View>
+              <Button
+                onPress={() => {
+                  setReps(reps + 1);
+                }}
+              >
+                +1 Rep
+              </Button>
+              <Button
+                onPress={() => {
+                  setReps((reps = 0));
+                }}
+              >
+                Set Reps to 0
+              </Button>
+            </View>
             <Button
+              title="Next Exercise"
               onPress={() => {
-                setReps(reps + 1);
-              }}
-            >
-              +1 Rep
-            </Button>
-            <Button
-              onPress={() => {
+                setCurPull(barbellRows);
                 setReps((reps = 0));
               }}
-            >
-              Set Reps to 0
-            </Button>
-          </View>
-          <Button
-            title="Return to Workout Selection"
-            onPress={() => {
-              navigation.navigate("Regiment Selection", {
-                loginData: loginData,
-              });
-            }}
-          ></Button>
-        </>
-      );
+            ></Button>
+            <Button
+              title="Return to Workout Selection"
+              onPress={() => {
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }}
+            ></Button>
+          </>
+        );
+      } else if (curPull === barbellRows) {
+        return (
+          <>
+            <Text>Now for some Barbell Rows.</Text>
+            <Text>{reps}</Text>
+            <View>
+              <Button
+                onPress={() => {
+                  setReps(reps + 1);
+                }}
+              >
+                +1 Rep
+              </Button>
+              <Button
+                onPress={() => {
+                  setReps((reps = 0));
+                }}
+              >
+                Set Reps to 0
+              </Button>
+            </View>
+            <Button
+              title="Next Exercise"
+              onPress={() => {
+                setCurPull(pullDowns);
+                setReps((reps = 0));
+              }}
+            ></Button>
+            <Button
+              title="Return to Workout Selection"
+              onPress={() => {
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }}
+            ></Button>
+          </>
+        );
+      } else if (curPull === pullDowns) {
+        return (
+          <>
+            <Text>Lat Pull Downs.</Text>
+            <Text>{reps}</Text>
+            <View>
+              <Button
+                onPress={() => {
+                  setReps(reps + 1);
+                }}
+              >
+                +1 Rep
+              </Button>
+              <Button
+                onPress={() => {
+                  setReps((reps = 0));
+                }}
+              >
+                Set Reps to 0
+              </Button>
+            </View>
+            <Button
+              title="Next Exercise"
+              onPress={() => {
+                setCurPull(cableRows);
+                setReps((reps = 0));
+              }}
+            ></Button>
+            <Button
+              title="Return to Workout Selection"
+              onPress={() => {
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }}
+            ></Button>
+          </>
+        );
+      } else if (curPull === cableRows) {
+        return (
+          <>
+            <Text>Now for some Cable Rows.</Text>
+            <Text>{reps}</Text>
+            <View>
+              <Button
+                onPress={() => {
+                  setReps(reps + 1);
+                }}
+              >
+                +1 Rep
+              </Button>
+              <Button
+                onPress={() => {
+                  setReps((reps = 0));
+                }}
+              >
+                Set Reps to 0
+              </Button>
+            </View>
+            <Button
+              title="Complete Workout"
+              onPress={() => {
+                setReps((reps = 0));
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }}
+            ></Button>
+          </>
+        );
+      }
     case 2:
-      return (
-        <>
-          <Text>This is the Leg Day Screen</Text>
-          <Text>Current Exercise: </Text>
-          <Text>{reps}</Text>
-          <View>
+      const lunges = 0;
+      const frontSquats = 1;
+      const backSquats = 2;
+      const deadlifts = 3;
+      let [curLegs, setCurLegs] = useState(lunges);
+
+      if (curLegs === lunges) {
+        return (
+          <>
+            <Text>Warm up with some Lunges (no weight).</Text>
+            <Text>{reps}</Text>
+            <View>
+              <Button
+                onPress={() => {
+                  setReps(reps + 1);
+                }}
+              >
+                +1 Rep
+              </Button>
+              <Button
+                onPress={() => {
+                  setReps((reps = 0));
+                }}
+              >
+                Set Reps to 0
+              </Button>
+            </View>
             <Button
+              title="Next Exercise"
               onPress={() => {
-                setReps(reps + 1);
-              }}
-            >
-              +1 Rep
-            </Button>
-            <Button
-              onPress={() => {
+                setCurLegs(frontSquats);
                 setReps((reps = 0));
               }}
-            >
-              Set Reps to 0
-            </Button>
-          </View>
-          <Button
-            title="Return to Workout Selection"
-            onPress={() => {
-              navigation.navigate("Regiment Selection", {
-                loginData: loginData,
-              });
-            }}
-          ></Button>
-        </>
-      );
+            ></Button>
+            <Button
+              title="Return to Workout Selection"
+              onPress={() => {
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }}
+            ></Button>
+          </>
+        );
+      } else if (curLegs === frontSquats) {
+        return (
+          <>
+            <Text>Now for some Front Squats.</Text>
+            <Text>{reps}</Text>
+            <View>
+              <Button
+                onPress={() => {
+                  setReps(reps + 1);
+                }}
+              >
+                +1 Rep
+              </Button>
+              <Button
+                onPress={() => {
+                  setReps((reps = 0));
+                }}
+              >
+                Set Reps to 0
+              </Button>
+            </View>
+            <Button
+              title="Next Exercise"
+              onPress={() => {
+                setCurLegs(backSquats);
+                setReps((reps = 0));
+              }}
+            ></Button>
+            <Button
+              title="Return to Workout Selection"
+              onPress={() => {
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }}
+            ></Button>
+          </>
+        );
+      } else if (curLegs === backSquats) {
+        return (
+          <>
+            <Text>Now for Back Squats.</Text>
+            <Text>{reps}</Text>
+            <View>
+              <Button
+                onPress={() => {
+                  setReps(reps + 1);
+                }}
+              >
+                +1 Rep
+              </Button>
+              <Button
+                onPress={() => {
+                  setReps((reps = 0));
+                }}
+              >
+                Set Reps to 0
+              </Button>
+            </View>
+            <Button
+              title="Next Exercise"
+              onPress={() => {
+                setCurLegs(deadlifts);
+                setReps((reps = 0));
+              }}
+            ></Button>
+            <Button
+              title="Return to Workout Selection"
+              onPress={() => {
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }}
+            ></Button>
+          </>
+        );
+      } else if (curLegs === deadlifts) {
+        return (
+          <>
+            <Text>Finally, some Deadlifts.</Text>
+            <Text>{reps}</Text>
+            <View>
+              <Button
+                onPress={() => {
+                  setReps(reps + 1);
+                }}
+              >
+                +1 Rep
+              </Button>
+              <Button
+                onPress={() => {
+                  setReps((reps = 0));
+                }}
+              >
+                Set Reps to 0
+              </Button>
+            </View>
+            <Button
+              title="Complete Workout"
+              onPress={() => {
+                setReps((reps = 0));
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }}
+            ></Button>
+          </>
+        );
+      }
     case 3:
-      return (
-        <>
-          <Text>This is the Shoulders Day Screen</Text>
-          <Text>Current Exercise: </Text>
-          <Text>{reps}</Text>
-          <View>
+      const teaCups = 0;
+      const sideRaise = 1;
+      const ohPress = 2;
+      const facePulls = 3;
+      let [curShoul, setCurShoul] = useState(teaCups);
+
+      if (curShoul === teaCups) {
+        return (
+          <>
+            <Text>Warmp up with some Tea Cups.</Text>
+            <Text>{reps}</Text>
+            <View>
+              <Button
+                onPress={() => {
+                  setReps(reps + 1);
+                }}
+              >
+                +1 Rep
+              </Button>
+              <Button
+                onPress={() => {
+                  setReps((reps = 0));
+                }}
+              >
+                Set Reps to 0
+              </Button>
+            </View>
             <Button
+              title="Next Exercise"
               onPress={() => {
-                setReps(reps + 1);
-              }}
-            >
-              +1 Rep
-            </Button>
-            <Button
-              onPress={() => {
+                setCurShoul(sideRaise);
                 setReps((reps = 0));
               }}
-            >
-              Set Reps to 0
-            </Button>
-          </View>
-          <Button
-            title="Return to Workout Selection"
-            onPress={() => {
-              navigation.navigate("Regiment Selection", {
-                loginData: loginData,
-              });
-            }}
-          ></Button>
-        </>
-      );
+            ></Button>
+            <Button
+              title="Return to Workout Selection"
+              onPress={() => {
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }}
+            ></Button>
+          </>
+        );
+      } else if (curShoul === sideRaise) {
+        return (
+          <>
+            <Text>Now for some Side Raises.</Text>
+            <Text>{reps}</Text>
+            <View>
+              <Button
+                onPress={() => {
+                  setReps(reps + 1);
+                }}
+              >
+                +1 Rep
+              </Button>
+              <Button
+                onPress={() => {
+                  setReps((reps = 0));
+                }}
+              >
+                Set Reps to 0
+              </Button>
+            </View>
+            <Button
+              title="Next Exercise"
+              onPress={() => {
+                setCurShoul(ohPress);
+                setReps((reps = 0));
+              }}
+            ></Button>
+            <Button
+              title="Return to Workout Selection"
+              onPress={() => {
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }}
+            ></Button>
+          </>
+        );
+      } else if (curShoul === ohPress) {
+        return (
+          <>
+            <Text>Overhead Press.</Text>
+            <Text>{reps}</Text>
+            <View>
+              <Button
+                onPress={() => {
+                  setReps(reps + 1);
+                }}
+              >
+                +1 Rep
+              </Button>
+              <Button
+                onPress={() => {
+                  setReps((reps = 0));
+                }}
+              >
+                Set Reps to 0
+              </Button>
+            </View>
+            <Button
+              title="Next Exercise"
+              onPress={() => {
+                setCurShoul(facePulls);
+                setReps((reps = 0));
+              }}
+            ></Button>
+            <Button
+              title="Return to Workout Selection"
+              onPress={() => {
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }}
+            ></Button>
+          </>
+        );
+      } else if (curShoul === facePulls) {
+        return (
+          <>
+            <Text>Now for some Face Pulls.</Text>
+            <Text>{reps}</Text>
+            <View>
+              <Button
+                onPress={() => {
+                  setReps(reps + 1);
+                }}
+              >
+                +1 Rep
+              </Button>
+              <Button
+                onPress={() => {
+                  setReps((reps = 0));
+                }}
+              >
+                Set Reps to 0
+              </Button>
+            </View>
+            <Button
+              title="Complete Workout"
+              onPress={() => {
+                setReps((reps = 0));
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }}
+            ></Button>
+          </>
+        );
+      }
     case 4:
       return (
         <>
-          <Text>This is the Rest Day Screen</Text>
-          <Text>Current Exercise: </Text>
-          <Text>{reps}</Text>
-          <View>
-            <Button
-              onPress={() => {
-                setReps(reps + 1);
-              }}
-            >
-              +1 Rep
-            </Button>
-            <Button
-              onPress={() => {
-                setReps((reps = 0));
-              }}
-            >
-              Set Reps to 0
-            </Button>
-          </View>
+          <Text>Looks like today is your Rest Day!</Text>
+          <Text>
+            Keep your muscles in good condition with the following stretches.
+          </Text>
           <Button
             title="Return to Workout Selection"
             onPress={() => {
