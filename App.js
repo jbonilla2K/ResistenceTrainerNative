@@ -13,11 +13,10 @@ import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TextInput, TouchableOpacity } from "react-native-web";
+import { TextInput } from "react-native-web";
 import { SwiperFlatList } from "react-native-swiper-flatlist";
 
 import LoginScreen from "./screens/LoginScreen";
-import { log } from "react-native-reanimated";
 
 const Stack = createNativeStackNavigator();
 const loginData = [];
@@ -27,16 +26,11 @@ const defaultUser = {
   usrRegiment: [0, 1, 2, 3, 4],
 };
 
-//===============================user profile object structure==========================
-// let newUser = {
-//   username: username,
-//   password: password,
-//   firstName: fName,
-//   lastName: lName,
-//   email: email,
-//   usrRegiment: [],
-//   usrGoals: [],
-// };
+function clearArray(array) {
+  for (let i = 0; i <= array.length + 1; i++) {
+    array.pop();
+  }
+}
 
 export default function App() {
   useEffect(() => {
@@ -88,7 +82,12 @@ function RegistrationScreen({ navigation, route }) {
     email: email,
     usrRegiment: [],
     usrGoals: [[], [], [], []],
-    usrMaxes: [[1, 2, 3], [], [], []],
+    usrMaxes: [
+      ["0", "0", "0"],
+      ["0", "0", "0"],
+      ["0", "0", "0"],
+      ["0", "0", "0"],
+    ],
   };
   let flags = [false, false, false, false];
   let gate = 0;
@@ -219,12 +218,6 @@ function EditingScreen({ navigation, route }) {
   const scrollRef7 = React.useRef(null);
 
   let newRegiment = [];
-
-  function clearArray(array) {
-    for (let i = 0; i <= array.length + 1; i++) {
-      array.pop();
-    }
-  }
 
   function handleSelections(value) {
     switch (value) {
@@ -436,12 +429,6 @@ function GoalsScreen({ navigation, route }) {
   let [curGroup, setCurGroup] = useState("No Group Selected");
   let [gate, openGate] = useState(true);
 
-  function clearArray(array) {
-    for (let i = 0; i <= array.length + 1; i++) {
-      array.pop();
-    }
-  }
-
   return (
     <>
       <Text>Select a group of Goals to view and edit.</Text>
@@ -502,14 +489,17 @@ function GoalsScreen({ navigation, route }) {
         }}
       ></Button>
       <Text>{dispExercise[0]}</Text>
-      <Text>{dispMaxes[0]}</Text>
-      <TextInput placeholder={dispGoals[0]} onChangeText={setGoal1}></TextInput>
+      <Text>Previous Max - {dispMaxes[0]}</Text>
+      <Text>Previous Goal - {dispGoals[0]}</Text>
+      <TextInput onChangeText={setGoal1}></TextInput>
       <Text>{dispExercise[1]}</Text>
-      <Text>{dispMaxes[1]}</Text>
-      <TextInput placeholder={dispGoals[1]} onChangeText={setGoal2}></TextInput>
+      <Text>Previous Max - {dispMaxes[1]}</Text>
+      <Text>Previous Goal - {dispGoals[1]}</Text>
+      <TextInput onChangeText={setGoal2}></TextInput>
       <Text>{dispExercise[2]}</Text>
-      <Text>{dispMaxes[2]}</Text>
-      <TextInput placeholder={dispGoals[2]} onChangeText={setGoal3}></TextInput>
+      <Text>Previous Max - {dispMaxes[2]}</Text>
+      <Text>Previous Goal - {dispGoals[2]}</Text>
+      <TextInput onChangeText={setGoal3}></TextInput>
       <Button
         title={curGroup}
         disabled={gate}
@@ -563,6 +553,10 @@ function CurrentExerciseScreen({ navigation, route }) {
   let [curWeight1, setCurWeight1] = useState();
   let [curWeight2, setCurWeight2] = useState();
   let [curWeight3, setCurWeight3] = useState();
+
+  let newMax1;
+  let newMax2;
+  let newMax3;
 
   switch (regIndex) {
     case 0:
@@ -729,10 +723,35 @@ function CurrentExerciseScreen({ navigation, route }) {
               title="Complete Workout"
               onPress={() => {
                 setReps((reps = 0));
-                // navigation.navigate("Regiment Selection", {loginData: loginData});
-                console.log(curWeight1);
-                console.log(curWeight2);
-                console.log(curWeight3);
+                if (Number(curWeight3) > Number(usrPushMaxes[2])) {
+                  newMax3 = curWeight3;
+                  console.log("new max achieved!");
+                } else {
+                  newMax3 = usrPushMaxes[2];
+                  console.log("almost there");
+                }
+                if (Number(curWeight2) > Number(usrPushMaxes[1])) {
+                  newMax2 = curWeight2;
+                  console.log("new max achieved!");
+                } else {
+                  newMax2 = usrPushMaxes[1];
+                  console.log("almost there");
+                }
+                if (Number(curWeight1) > Number(usrPushMaxes[0])) {
+                  newMax1 = curWeight1;
+                  console.log("new max achieved!");
+                } else {
+                  newMax1 = usrPushMaxes[0];
+                  console.log("almost there");
+                }
+                clearArray(loginData[0].usrMaxes[0]);
+                loginData[0].usrMaxes[0].push(newMax3);
+                loginData[0].usrMaxes[0].push(newMax2);
+                loginData[0].usrMaxes[0].push(newMax1);
+
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
               }}
             ></Button>
           </>
@@ -748,7 +767,7 @@ function CurrentExerciseScreen({ navigation, route }) {
       if (curPull === pullUps) {
         return (
           <>
-            <Text>Warmp up your push group with some Pull Ups.</Text>
+            <Text>Warmp up your pull group with some Pull Ups.</Text>
             <Text>{reps}</Text>
             <View>
               <Button
@@ -787,7 +806,12 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Now for some Barbell Rows.</Text>
-            <Text>{reps}</Text>
+            <TextInput
+              placeholder="Press here to set your current weight."
+              onChangeText={setCurWeight1}
+            ></TextInput>
+            <Text>Current Goal: {usrPullGoals[0]}</Text>
+            <Text>Previous Max: {usrPullMaxes[0]}</Text>
             <View>
               <Button
                 onPress={() => {
@@ -825,7 +849,12 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Lat Pull Downs.</Text>
-            <Text>{reps}</Text>
+            <TextInput
+              placeholder="Press here to set your current weight."
+              onChangeText={setCurWeight2}
+            ></TextInput>
+            <Text>Current Goal: {usrPullGoals[1]}</Text>
+            <Text>Previous Max: {usrPullMaxes[1]}</Text>
             <View>
               <Button
                 onPress={() => {
@@ -863,7 +892,12 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Now for some Cable Rows.</Text>
-            <Text>{reps}</Text>
+            <TextInput
+              placeholder="Press here to set your current weight."
+              onChangeText={setCurWeight3}
+            ></TextInput>
+            <Text>Current Goal: {usrPullGoals[2]}</Text>
+            <Text>Previous Max: {usrPullMaxes[2]}</Text>
             <View>
               <Button
                 onPress={() => {
@@ -884,6 +918,32 @@ function CurrentExerciseScreen({ navigation, route }) {
               title="Complete Workout"
               onPress={() => {
                 setReps((reps = 0));
+                if (Number(curWeight3) > Number(usrPullMaxes[2])) {
+                  newMax3 = curWeight3;
+                  console.log("new max achieved!");
+                } else {
+                  newMax3 = usrPullMaxes[2];
+                  console.log("almost there");
+                }
+                if (Number(curWeight2) > Number(usrPullMaxes[1])) {
+                  newMax2 = curWeight2;
+                  console.log("new max achieved!");
+                } else {
+                  newMax2 = usrPullMaxes[1];
+                  console.log("almost there");
+                }
+                if (Number(curWeight1) > Number(usrPullMaxes[0])) {
+                  newMax1 = curWeight1;
+                  console.log("new max achieved!");
+                } else {
+                  newMax1 = usrPullMaxes[0];
+                  console.log("almost there");
+                }
+                clearArray(loginData[0].usrMaxes[1]);
+                loginData[0].usrMaxes[1].push(newMax1);
+                loginData[0].usrMaxes[1].push(newMax2);
+                loginData[0].usrMaxes[1].push(newMax3);
+
                 navigation.navigate("Regiment Selection", {
                   loginData: loginData,
                 });
@@ -941,7 +1001,12 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Now for some Front Squats.</Text>
-            <Text>{reps}</Text>
+            <TextInput
+              placeholder="Press here to set your current weight."
+              onChangeText={setCurWeight1}
+            ></TextInput>
+            <Text>Current Goal: {usrLegGoals[0]}</Text>
+            <Text>Previous Max: {usrLegMaxes[0]}</Text>
             <View>
               <Button
                 onPress={() => {
@@ -979,7 +1044,12 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Now for Back Squats.</Text>
-            <Text>{reps}</Text>
+            <TextInput
+              placeholder="Press here to set your current weight."
+              onChangeText={setCurWeight2}
+            ></TextInput>
+            <Text>Current Goal: {usrLegGoals[1]}</Text>
+            <Text>Previous Max: {usrLegMaxes[1]}</Text>
             <View>
               <Button
                 onPress={() => {
@@ -1017,7 +1087,12 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Finally, some Deadlifts.</Text>
-            <Text>{reps}</Text>
+            <TextInput
+              placeholder="Press here to set your current weight."
+              onChangeText={setCurWeight3}
+            ></TextInput>
+            <Text>Current Goal: {usrLegGoals[2]}</Text>
+            <Text>Previous Max: {usrLegMaxes[2]}</Text>
             <View>
               <Button
                 onPress={() => {
@@ -1038,6 +1113,32 @@ function CurrentExerciseScreen({ navigation, route }) {
               title="Complete Workout"
               onPress={() => {
                 setReps((reps = 0));
+                if (Number(curWeight3) > Number(usrLegMaxes[2])) {
+                  newMax3 = curWeight3;
+                  console.log("new max achieved!");
+                } else {
+                  newMax3 = usrLegMaxes[2];
+                  console.log("almost there");
+                }
+                if (Number(curWeight2) > Number(usrLegMaxes[1])) {
+                  newMax2 = curWeight2;
+                  console.log("new max achieved!");
+                } else {
+                  newMax2 = usrLegMaxes[1];
+                  console.log("almost there");
+                }
+                if (Number(curWeight1) > Number(usrLegMaxes[0])) {
+                  newMax1 = curWeight1;
+                  console.log("new max achieved!");
+                } else {
+                  newMax1 = usrLegMaxes[0];
+                  console.log("almost there");
+                }
+                clearArray(loginData[0].usrMaxes[2]);
+                loginData[0].usrMaxes[2].push(newMax1);
+                loginData[0].usrMaxes[2].push(newMax2);
+                loginData[0].usrMaxes[2].push(newMax3);
+
                 navigation.navigate("Regiment Selection", {
                   loginData: loginData,
                 });
@@ -1095,7 +1196,12 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Now for some Side Raises.</Text>
-            <Text>{reps}</Text>
+            <TextInput
+              placeholder="Press here to set your current weight."
+              onChangeText={setCurWeight1}
+            ></TextInput>
+            <Text>Current Goal: {usrShoGoals[0]}</Text>
+            <Text>Previous Max: {usrShoMaxes[0]}</Text>
             <View>
               <Button
                 onPress={() => {
@@ -1133,7 +1239,12 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Overhead Press.</Text>
-            <Text>{reps}</Text>
+            <TextInput
+              placeholder="Press here to set your current weight."
+              onChangeText={setCurWeight2}
+            ></TextInput>
+            <Text>Current Goal: {usrShoGoals[1]}</Text>
+            <Text>Previous Max: {usrShoMaxes[1]}</Text>
             <View>
               <Button
                 onPress={() => {
@@ -1171,7 +1282,12 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Now for some Face Pulls.</Text>
-            <Text>{reps}</Text>
+            <TextInput
+              placeholder="Press here to set your current weight."
+              onChangeText={setCurWeight3}
+            ></TextInput>
+            <Text>Current Goal: {usrShoGoals[2]}</Text>
+            <Text>Previous Max: {usrShoMaxes[2]}</Text>
             <View>
               <Button
                 onPress={() => {
@@ -1192,6 +1308,32 @@ function CurrentExerciseScreen({ navigation, route }) {
               title="Complete Workout"
               onPress={() => {
                 setReps((reps = 0));
+                if (Number(curWeight3) > Number(usrShoMaxes[2])) {
+                  newMax3 = curWeight3;
+                  console.log("new max achieved!");
+                } else {
+                  newMax3 = usrShoMaxes[2];
+                  console.log("almost there");
+                }
+                if (Number(curWeight2) > Number(usrShoMaxes[1])) {
+                  newMax2 = curWeight2;
+                  console.log("new max achieved!");
+                } else {
+                  newMax2 = usrShoMaxes[1];
+                  console.log("almost there");
+                }
+                if (Number(curWeight1) > Number(usrShoMaxes[0])) {
+                  newMax1 = curWeight1;
+                  console.log("new max achieved!");
+                } else {
+                  newMax1 = usrShoMaxes[0];
+                  console.log("almost there");
+                }
+                clearArray(loginData[0].usrMaxes[2]);
+                loginData[0].usrMaxes[3].push(newMax1);
+                loginData[0].usrMaxes[3].push(newMax2);
+                loginData[0].usrMaxes[3].push(newMax3);
+
                 navigation.navigate("Regiment Selection", {
                   loginData: loginData,
                 });
