@@ -3,6 +3,7 @@ import { CheckBox, Input, Button } from "@rneui/themed";
 import * as React from "react";
 
 export default function LoginScreen({ navigation, route }) {
+  let { loginData } = route.params;
   let [username, setUsername] = useState(" ");
   let [password, setPassword] = useState(" ");
   return (
@@ -29,7 +30,7 @@ export default function LoginScreen({ navigation, route }) {
       <Button
         title="Register"
         onPress={() => {
-          navigation.navigate("Registration");
+          navigation.navigate("Registration", { loginData: loginData });
         }}
       ></Button>
     </>

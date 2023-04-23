@@ -17,6 +17,7 @@ import { TextInput, TouchableOpacity } from "react-native-web";
 import { SwiperFlatList } from "react-native-swiper-flatlist";
 
 import LoginScreen from "./screens/LoginScreen";
+import { log } from "react-native-reanimated";
 
 const Stack = createNativeStackNavigator();
 const loginData = [];
@@ -87,7 +88,7 @@ function RegistrationScreen({ navigation, route }) {
     email: email,
     usrRegiment: [],
     usrGoals: [[], [], [], []],
-    usrMaxes: [[], [], [], []],
+    usrMaxes: [[1, 2, 3], [], [], []],
   };
   let flags = [false, false, false, false];
   let gate = 0;
@@ -201,6 +202,12 @@ function RegistrationScreen({ navigation, route }) {
 
 function EditingScreen({ navigation, route }) {
   let { loginData } = route.params;
+  let indicies = [];
+  if (loginData[0].usrRegiment.length != 0) {
+    indicies = loginData[0].usrRegiment[0];
+  } else {
+    indicies = [0, 1, 2, 3, 4, 0, 1];
+  }
 
   let [saved, setSave] = useState(true);
   const scrollRef1 = React.useRef(null);
@@ -241,7 +248,7 @@ function EditingScreen({ navigation, route }) {
         <Text>Sunday</Text>
         <SwiperFlatList
           ref={scrollRef1}
-          index={0}
+          index={indicies[0]}
           data={regDays}
           renderItem={({ item }) => (
             <View style={[styles.child]}>
@@ -253,7 +260,7 @@ function EditingScreen({ navigation, route }) {
         <Text>Monday</Text>
         <SwiperFlatList
           ref={scrollRef2}
-          index={1}
+          index={indicies[1]}
           data={regDays}
           renderItem={({ item }) => (
             <View style={[styles.child]}>
@@ -264,7 +271,7 @@ function EditingScreen({ navigation, route }) {
         <Text>Tuesday</Text>
         <SwiperFlatList
           ref={scrollRef3}
-          index={2}
+          index={indicies[2]}
           data={regDays}
           renderItem={({ item }) => (
             <View style={[styles.child]}>
@@ -275,7 +282,7 @@ function EditingScreen({ navigation, route }) {
         <Text>Wednesday</Text>
         <SwiperFlatList
           ref={scrollRef4}
-          index={3}
+          index={indicies[3]}
           data={regDays}
           renderItem={({ item }) => (
             <View style={[styles.child]}>
@@ -286,7 +293,7 @@ function EditingScreen({ navigation, route }) {
         <Text>Thursday</Text>
         <SwiperFlatList
           ref={scrollRef5}
-          index={4}
+          index={indicies[4]}
           data={regDays}
           renderItem={({ item }) => (
             <View style={[styles.child]}>
@@ -297,7 +304,7 @@ function EditingScreen({ navigation, route }) {
         <Text>Friday</Text>
         <SwiperFlatList
           ref={scrollRef6}
-          index={0}
+          index={indicies[0]}
           data={regDays}
           renderItem={({ item }) => (
             <View style={[styles.child]}>
@@ -308,7 +315,7 @@ function EditingScreen({ navigation, route }) {
         <Text>Saturday</Text>
         <SwiperFlatList
           ref={scrollRef7}
-          index={1}
+          index={indicies[1]}
           data={regDays}
           renderItem={({ item }) => (
             <View style={[styles.child]}>
@@ -357,12 +364,19 @@ function EditingScreen({ navigation, route }) {
 function SelectionScreen({ navigation, route }) {
   let { loginData } = route.params;
   console.log(loginData);
+
   let [madeReg, updateMadeReg] = useState(true);
+  let [madeGoals, updateMadeGoals] = useState(true);
   useEffect(() => {
     if (loginData[0].usrRegiment.length != 0) {
       updateMadeReg(false);
     } else {
       console.log("current user has made no regiment");
+    }
+    if (loginData[0].usrGoals[0].length != 0) {
+      updateMadeGoals(false);
+    } else {
+      console.log("current user has not set any goals");
     }
   });
 
@@ -370,26 +384,23 @@ function SelectionScreen({ navigation, route }) {
     <>
       <Text>This is the Workout Selection Screen</Text>
       <Button
+        title="Begin Custom Workout"
+        disabled={madeReg || madeGoals}
+        onPress={() => {
+          navigation.navigate("Workout", { loginData: loginData });
+        }}
+      ></Button>
+      <Button
+        disabled={madeReg}
+        title={madeGoals ? "Set Goals" : "Edit Goals"}
+        onPress={() => {
+          navigation.navigate("Goals", { loginData: loginData });
+        }}
+      ></Button>
+      <Button
         title={madeReg ? "Create Regiment" : "Edit Regiment"}
         onPress={() => {
           navigation.navigate("Regiment Editor", { loginData: loginData });
-        }}
-      ></Button>
-      <Button
-        title="Begin Custom Workout"
-        disabled={madeReg}
-        onPress={() => {
-          if (!madeReg) {
-            navigation.navigate("Workout", { loginData: loginData });
-          } else {
-            alert("You must make a custom regiment first!");
-          }
-        }}
-      ></Button>
-      <Button
-        title="View Goals"
-        onPress={() => {
-          navigation.navigate("Goals", { loginData: loginData });
         }}
       ></Button>
       <Button
@@ -532,6 +543,16 @@ function GoalsScreen({ navigation, route }) {
 function CurrentExerciseScreen({ navigation, route }) {
   let { loginData } = route.params;
 
+  let usrPushGoals = loginData[0].usrGoals[0];
+  let usrPullGoals = loginData[0].usrGoals[1];
+  let usrLegGoals = loginData[0].usrGoals[2];
+  let usrShoGoals = loginData[0].usrGoals[3];
+
+  let usrPushMaxes = loginData[0].usrMaxes[0];
+  let usrPullMaxes = loginData[0].usrMaxes[1];
+  let usrLegMaxes = loginData[0].usrMaxes[2];
+  let usrShoMaxes = loginData[0].usrMaxes[3];
+
   let [reps, setReps] = useState(0);
 
   let usrReg = loginData[0].usrRegiment;
@@ -539,7 +560,9 @@ function CurrentExerciseScreen({ navigation, route }) {
   let day = d.getDay();
   let regIndex = usrReg[0][day];
 
-  let [curGoals, setCurGoals] = useState([]);
+  let [curWeight1, setCurWeight1] = useState();
+  let [curWeight2, setCurWeight2] = useState();
+  let [curWeight3, setCurWeight3] = useState();
 
   switch (regIndex) {
     case 0:
@@ -548,7 +571,6 @@ function CurrentExerciseScreen({ navigation, route }) {
       const flatBench = 2;
       const chestFly = 3;
       let [curPush, setCurPush] = useState(pushUps);
-      console.log(loginData[0].usrGoals[0]);
 
       if (curPush === pushUps) {
         return (
@@ -592,7 +614,13 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Now for some Incline Bench Press.</Text>
-            <Text>{reps}</Text>
+            <Text>Reps: {reps}</Text>
+            <TextInput
+              placeholder="Press here to set your current weight."
+              onChangeText={setCurWeight1}
+            ></TextInput>
+            <Text>Current Goal: {usrPushGoals[0]}</Text>
+            <Text>Previous Max: {usrPushMaxes[0]}</Text>
             <View>
               <Button
                 onPress={() => {
@@ -630,7 +658,13 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Flat Bench Press.</Text>
-            <Text>{reps}</Text>
+            <Text>Reps: {reps}</Text>
+            <TextInput
+              placeholder="Press here to set your current weight."
+              onChangeText={setCurWeight2}
+            ></TextInput>
+            <Text>Current Goal: {usrPushGoals[1]}</Text>
+            <Text>Previous Max: {usrPushMaxes[1]}</Text>
             <View>
               <Button
                 onPress={() => {
@@ -668,7 +702,13 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Now for some Chest Flys.</Text>
-            <Text>{reps}</Text>
+            <Text>Reps: {reps}</Text>
+            <TextInput
+              placeholder="Press here to set your current weight."
+              onChangeText={setCurWeight3}
+            ></TextInput>
+            <Text>Current Goal: {usrPushGoals[2]}</Text>
+            <Text>Previous Max: {usrPushMaxes[2]}</Text>
             <View>
               <Button
                 onPress={() => {
@@ -689,9 +729,10 @@ function CurrentExerciseScreen({ navigation, route }) {
               title="Complete Workout"
               onPress={() => {
                 setReps((reps = 0));
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
+                // navigation.navigate("Regiment Selection", {loginData: loginData});
+                console.log(curWeight1);
+                console.log(curWeight2);
+                console.log(curWeight3);
               }}
             ></Button>
           </>
