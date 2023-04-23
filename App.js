@@ -86,18 +86,8 @@ function RegistrationScreen({ navigation, route }) {
     lastName: lName,
     email: email,
     usrRegiment: [],
-    usrGoals: [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [9, 10, 11],
-    ],
-    usrMaxes: [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [9, 10, 11],
-    ],
+    usrGoals: [[], [], [], []],
+    usrMaxes: [[], [], [], []],
   };
   let flags = [false, false, false, false];
   let gate = 0;
@@ -490,7 +480,7 @@ function GoalsScreen({ navigation, route }) {
       <Button
         title="View Shoulder Day Exercises"
         onPress={() => {
-          setCurGroup("Save Shoulders Workout Goals");
+          setCurGroup("Save Shoulder Workout Goals");
           setDispGoals(usrShoGoals);
           setDispMaxes(usrShoMaxes);
           setDispExercise(["Lateral Raise", "Overhead Press", "Face Pulls"]);
