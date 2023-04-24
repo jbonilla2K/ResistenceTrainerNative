@@ -7,6 +7,7 @@ import {
   Text,
   View,
   Dimensions,
+  Pressable,
 } from "react-native";
 import { CheckBox, Input, Button } from "@rneui/themed";
 import * as React from "react";
@@ -50,14 +51,18 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Goals">
+      <Stack.Navigator initialRouteName="Regiment Editor">
         <Stack.Screen
           name="Login"
           component={LoginScreen}
-          options={{ title: "Resistence Trainer - Native" }}
+          options={{ headerShown: false }}
           initialParams={{ loginData: loginData }}
         />
-        <Stack.Screen name="Registration" component={RegistrationScreen} />
+        <Stack.Screen
+          name="Registration"
+          component={RegistrationScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Regiment Selection"
           component={SelectionScreen}
@@ -162,72 +167,96 @@ function RegistrationScreen({ navigation, route }) {
   return (
     <>
       <View style={styles.container}>
-        <Text>Please fill out the required fields below.</Text>
-        <Input
-          placeholder="First Name"
-          onChangeText={setFname}
-          errorMessage={validateName(fName)}
-        ></Input>
-        <Input
-          placeholder="Last Name"
-          onChangeText={setLname}
-          errorMessage={validateName(lName)}
-        ></Input>
-        <Input placeholder="Username" onChangeText={setUsername}></Input>
-        <Input
-          placeholder="Password - Be sure to include an uppercase letter and a number."
-          onChangeText={setPassword}
-          errorMessage={validatePassword(password)}
-        ></Input>
-        <Input
-          placeholder="Confirm Password"
-          onChangeText={setConfrimPass}
-          errorMessage={validateConfirmPass(confirmPass)}
-        ></Input>
-        <Input
-          placeholder="Email - someone@email.com"
-          onChangeText={setEmail}
-          onBlur={() => {
-            let result = validateEmail(email);
-            return result;
-          }}
-          errorMessage={validateEmail(email)}
-        ></Input>
-        <Button
-          color="#000"
-          title="Sign Up"
-          testID="register-button"
-          onPress={() => {
-            for (var i = 0; i < flags.length; i++) {
-              if (flags[i] == true) {
-                gate = gate + 1;
+        <Text style={styles.instruction}>
+          Please fill out the required fields below.
+        </Text>
+        <View style={styles.inputGroup}>
+          <Input
+            style={styles.input}
+            placeholder="First Name"
+            onChangeText={setFname}
+            errorMessage={validateName(fName)}
+          ></Input>
+          <Input
+            style={styles.input}
+            placeholder="Last Name"
+            onChangeText={setLname}
+            errorMessage={validateName(lName)}
+          ></Input>
+          <Input
+            style={styles.input}
+            placeholder="Username"
+            onChangeText={setUsername}
+          ></Input>
+          <Input
+            style={styles.input}
+            placeholder="Password"
+            onChangeText={setPassword}
+            errorMessage={validatePassword(password)}
+          ></Input>
+          <Input
+            style={styles.input}
+            placeholder="Confirm Password"
+            onChangeText={setConfrimPass}
+            errorMessage={validateConfirmPass(confirmPass)}
+          ></Input>
+          <Input
+            style={styles.input}
+            placeholder="Email"
+            onChangeText={setEmail}
+            onBlur={() => {
+              let result = validateEmail(email);
+              return result;
+            }}
+            errorMessage={validateEmail(email)}
+          ></Input>
+        </View>
+        <View style={styles.buttonGroup1}>
+          <Pressable
+            style={styles.logButton}
+            testID="register-button"
+            onPress={() => {
+              for (var i = 0; i < flags.length; i++) {
+                if (flags[i] == true) {
+                  gate = gate + 1;
+                }
               }
-            }
-            if (gate != flags.length) {
-              alert("All fields must be filled in correctly.");
-            } else {
-              loginData.pop();
-              loginData.push(newUser);
-              navigation.navigate("Regiment Selection", {
-                loginData: loginData,
-              });
-            }
-          }}
-        ></Button>
+              if (gate != flags.length) {
+                alert("All fields must be filled in correctly.");
+              } else {
+                loginData.pop();
+                loginData.push(newUser);
+                navigation.navigate("Regiment Selection", {
+                  loginData: loginData,
+                });
+              }
+            }}
+          >
+            <Text style={styles.logButtonFont}>Sign Up</Text>
+          </Pressable>
+          <Pressable
+            style={styles.returnButton}
+            onPress={() => {
+              navigation.navigate("Login");
+            }}
+          >
+            <Text style={styles.returnButtonFont}>Return</Text>
+          </Pressable>
+        </View>
       </View>
     </>
   );
 }
 
 function EditingScreen({ navigation, route }) {
-  let { loginData } = route.params;
-  let indicies = [];
-  if (loginData[0].usrRegiment.length != 0) {
-    indicies = loginData[0].usrRegiment[0];
-  } else {
-    indicies = [0, 1, 2, 3, 4, 0, 1];
-  }
-
+  // let { loginData } = route.params;
+  // let indicies = [];
+  // if (loginData[0].usrRegiment.length != 0) {
+  //   indicies = loginData[0].usrRegiment[0];
+  // } else {
+  //   indicies = [0, 1, 2, 3, 4, 0, 1];
+  // }
+  let indicies = [0, 1, 2, 3, 4, 0, 1];
   let [saved, setSave] = useState(true);
   const scrollRef1 = React.useRef(null);
   const scrollRef2 = React.useRef(null);
@@ -257,81 +286,81 @@ function EditingScreen({ navigation, route }) {
   const regDays = ["Push", "Pull", "Legs", "Shoulders", "Rest"];
   return (
     <>
-      <View style={styles.container}>
-        <Text>Sunday</Text>
+      <View style={styles.container2}>
+        <Text style={styles.label}>Sunday</Text>
         <SwiperFlatList
           ref={scrollRef1}
           index={indicies[0]}
           data={regDays}
           renderItem={({ item }) => (
-            <View style={[styles.child]}>
+            <View style={styles.slider}>
               <Text style={styles.text}>{item}</Text>
             </View>
           )}
         />
 
-        <Text>Monday</Text>
+        <Text style={styles.label}>Monday</Text>
         <SwiperFlatList
           ref={scrollRef2}
           index={indicies[1]}
           data={regDays}
           renderItem={({ item }) => (
-            <View style={[styles.child]}>
+            <View style={styles.slider}>
               <Text style={styles.text}>{item}</Text>
             </View>
           )}
         />
-        <Text>Tuesday</Text>
+        <Text style={styles.label}>Tuesday</Text>
         <SwiperFlatList
           ref={scrollRef3}
           index={indicies[2]}
           data={regDays}
           renderItem={({ item }) => (
-            <View style={[styles.child]}>
+            <View style={styles.slider}>
               <Text style={styles.text}>{item}</Text>
             </View>
           )}
         />
-        <Text>Wednesday</Text>
+        <Text style={styles.label}>Wednesday</Text>
         <SwiperFlatList
           ref={scrollRef4}
           index={indicies[3]}
           data={regDays}
           renderItem={({ item }) => (
-            <View style={[styles.child]}>
+            <View style={styles.slider}>
               <Text style={styles.text}>{item}</Text>
             </View>
           )}
         />
-        <Text>Thursday</Text>
+        <Text style={styles.label}>Thursday</Text>
         <SwiperFlatList
           ref={scrollRef5}
           index={indicies[4]}
           data={regDays}
           renderItem={({ item }) => (
-            <View style={[styles.child]}>
+            <View style={styles.slider}>
               <Text style={styles.text}>{item}</Text>
             </View>
           )}
         />
-        <Text>Friday</Text>
+        <Text style={styles.label}>Friday</Text>
         <SwiperFlatList
           ref={scrollRef6}
           index={indicies[0]}
           data={regDays}
           renderItem={({ item }) => (
-            <View style={[styles.child]}>
+            <View style={styles.slider}>
               <Text style={styles.text}>{item}</Text>
             </View>
           )}
         />
-        <Text>Saturday</Text>
+        <Text style={styles.label}>Saturday</Text>
         <SwiperFlatList
           ref={scrollRef7}
           index={indicies[1]}
           data={regDays}
           renderItem={({ item }) => (
-            <View style={[styles.child]}>
+            <View style={styles.slider}>
               <Text style={styles.text}>{item}</Text>
             </View>
           )}
@@ -376,7 +405,6 @@ function EditingScreen({ navigation, route }) {
 
 function SelectionScreen({ navigation, route }) {
   let { loginData } = route.params;
-  console.log(loginData);
 
   let [madeReg, updateMadeReg] = useState(true);
   let [madeGoals, updateMadeGoals] = useState(true);
@@ -395,49 +423,68 @@ function SelectionScreen({ navigation, route }) {
 
   return (
     <>
-      <Text>This is the Workout Selection Screen</Text>
-      <Button
-        title="Begin Custom Workout"
-        disabled={madeReg || madeGoals}
-        onPress={() => {
-          navigation.navigate("Workout", { loginData: loginData });
-        }}
-      ></Button>
-      <Button
-        disabled={madeReg}
-        title={madeGoals ? "Set Goals" : "View Goals"}
-        onPress={() => {
-          navigation.navigate("Goals", { loginData: loginData });
-        }}
-      ></Button>
-      <Button
-        title={madeReg ? "Create Regiment" : "Edit Regiment"}
-        onPress={() => {
-          navigation.navigate("Regiment Editor", { loginData: loginData });
-        }}
-      ></Button>
-      <Button
-        title="Log Out"
-        onPress={() => {
-          navigation.navigate("Login");
-        }}
-      ></Button>
+      <View style={styles.container}>
+        <View style={styles.buttonGroup2}>
+          <Pressable
+            style={
+              madeReg || madeGoals
+                ? styles.listButtonDisabledTop
+                : styles.listButtonTop
+            }
+            disabled={madeReg || madeGoals}
+            onPress={() => {
+              navigation.navigate("Workout", { loginData: loginData });
+            }}
+          >
+            <Text style={styles.listButtonFont}>Begin Custom Workout</Text>
+          </Pressable>
+          <Pressable
+            style={madeReg ? styles.listButtonDisabled : styles.listButton}
+            disabled={madeReg}
+            onPress={() => {
+              navigation.navigate("Goals", { loginData: loginData });
+            }}
+          >
+            <Text style={styles.listButtonFont}>
+              {madeGoals ? "Set Goals" : "View Goals"}
+            </Text>
+          </Pressable>
+          <Pressable
+            style={styles.listButton}
+            onPress={() => {
+              navigation.navigate("Regiment Editor", { loginData: loginData });
+            }}
+          >
+            <Text style={styles.listButtonFont}>
+              {madeReg ? "Create Regiment" : "Edit Regiment"}
+            </Text>
+          </Pressable>
+          <Pressable
+            style={styles.returnButton2}
+            onPress={() => {
+              navigation.navigate("Login");
+            }}
+          >
+            <Text style={styles.returnButtonFont}>Log Out</Text>
+          </Pressable>
+        </View>
+      </View>
     </>
   );
 }
 
 function GoalsScreen({ navigation, route }) {
-  // let { loginData } = route.params;
+  let { loginData } = route.params;
 
-  // let usrPushGoals = loginData[0].usrGoals[0];
-  // let usrPullGoals = loginData[0].usrGoals[1];
-  // let usrLegGoals = loginData[0].usrGoals[2];
-  // let usrShoGoals = loginData[0].usrGoals[3];
+  let usrPushGoals = loginData[0].usrGoals[0];
+  let usrPullGoals = loginData[0].usrGoals[1];
+  let usrLegGoals = loginData[0].usrGoals[2];
+  let usrShoGoals = loginData[0].usrGoals[3];
 
-  // let usrPushMaxes = loginData[0].usrMaxes[0];
-  // let usrPullMaxes = loginData[0].usrMaxes[1];
-  // let usrLegMaxes = loginData[0].usrMaxes[2];
-  // let usrShoMaxes = loginData[0].usrMaxes[3];
+  let usrPushMaxes = loginData[0].usrMaxes[0];
+  let usrPullMaxes = loginData[0].usrMaxes[1];
+  let usrLegMaxes = loginData[0].usrMaxes[2];
+  let usrShoMaxes = loginData[0].usrMaxes[3];
 
   let [goal1, setGoal1] = useState();
   let [goal2, setGoal2] = useState();
@@ -453,10 +500,9 @@ function GoalsScreen({ navigation, route }) {
     <>
       <View style={styles.container}>
         <Text>Select a group of Goals to view and edit.</Text>
-        <View style={styles.buttonGroup}>
-          <Button
+        <View style={styles.buttonGroup1}>
+          <Pressable
             style={styles.button}
-            title="Push"
             onPress={() => {
               setCurGroup("Save Push Workout Goals");
               setDispGoals(usrPushGoals);
@@ -471,10 +517,11 @@ function GoalsScreen({ navigation, route }) {
               setGoal3(0);
               openGate(false);
             }}
-          ></Button>
-          <Button
+          >
+            <Text>Push</Text>
+          </Pressable>
+          <Pressable
             style={styles.button}
-            title="Pull"
             onPress={() => {
               setCurGroup("Save Pull Workout Goals");
               setDispGoals(usrPullGoals);
@@ -485,7 +532,11 @@ function GoalsScreen({ navigation, route }) {
               setGoal3(0);
               openGate(false);
             }}
-          ></Button>
+          >
+            <Text>Pull</Text>
+          </Pressable>
+        </View>
+        <View style={styles.buttonGroup1}>
           <Button
             style={styles.button}
             title="Legs"
@@ -519,18 +570,33 @@ function GoalsScreen({ navigation, route }) {
             }}
           ></Button>
         </View>
-        <Text>{dispExercise[0]}</Text>
-        <Text>Previous Max - {dispMaxes[0]}</Text>
-        <Text>Previous Goal - {dispGoals[0]}</Text>
-        <TextInput onChangeText={setGoal1}></TextInput>
-        <Text>{dispExercise[1]}</Text>
-        <Text>Previous Max - {dispMaxes[1]}</Text>
-        <Text>Previous Goal - {dispGoals[1]}</Text>
-        <TextInput onChangeText={setGoal2}></TextInput>
-        <Text>{dispExercise[2]}</Text>
-        <Text>Previous Max - {dispMaxes[2]}</Text>
-        <Text>Previous Goal - {dispGoals[2]}</Text>
-        <TextInput onChangeText={setGoal3}></TextInput>
+        <Text style={styles.label}>{dispExercise[0]}</Text>
+        <View style={styles.goalsGroup}>
+          <Text style={styles.goalsText}>Max - {dispMaxes[0]}</Text>
+          <Text style={styles.goalsText}>Goal - {dispGoals[0]}</Text>
+        </View>
+        <TextInput
+          style={styles.goalsInput}
+          onChangeText={setGoal1}
+        ></TextInput>
+        <Text style={styles.label}>{dispExercise[1]}</Text>
+        <View style={styles.goalsGroup}>
+          <Text style={styles.goalsText}>Max - {dispMaxes[1]}</Text>
+          <Text style={styles.goalsText}>Goal - {dispGoals[1]}</Text>
+        </View>
+        <TextInput
+          style={styles.goalsInput}
+          onChangeText={setGoal2}
+        ></TextInput>
+        <Text style={styles.label}>{dispExercise[2]}</Text>
+        <View style={styles.goalsGroup}>
+          <Text style={styles.goalsText}>Max - {dispMaxes[2]}</Text>
+          <Text style={styles.goalsText}>Goal - {dispGoals[2]}</Text>
+        </View>
+        <TextInput
+          style={styles.goalsInput}
+          onChangeText={setGoal3}
+        ></TextInput>
         <Button
           title={curGroup}
           disabled={gate}
@@ -1406,18 +1472,156 @@ function CurrentExerciseScreen({ navigation, route }) {
 const { width } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white",
-    align: "center",
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFC904",
+  },
+  container2: {
+    backgroundColor: "#FFC904",
+  },
+
+  instruction: {
+    fontSize: 25,
+    fontWeight: "bold",
     textAlign: "center",
+    paddingBottom: 10,
+    marginHorizontal: 5,
+  },
+  label: {
+    fontSize: width * 0.06,
+    paddingLeft: width * 0.1,
   },
   text: { width: width, fontSize: width * 0.1, textAlign: "center" },
+
+  slider: {
+    borderTopWidth: 3,
+    borderBottomWidth: 3,
+  },
+
   button: {
-    width: width * 0.22,
-    fontSize: "90%",
+    width: width * 0.45,
     margin: 5,
   },
-  buttonGroup: {
+
+  buttonGroup1: {
     flexDirection: "row",
     justifyContent: "center",
+  },
+  buttonGroup2: {
+    paddingVertical: width * 0.2,
+    width: width * 0.7,
+  },
+
+  logButton: {
+    borderTopLeftRadius: 15,
+    borderBottomLeftRadius: 15,
+    backgroundColor: "#FFE278",
+    borderWidth: 1,
+    borderColor: "black",
+    width: width * 0.4,
+    padding: 10,
+  },
+  logButtonFont: {
+    fontSize: 35,
+    color: "black",
+    textAlign: "center",
+  },
+
+  returnButton: {
+    borderTopRightRadius: 15,
+    borderBottomRightRadius: 15,
+    backgroundColor: "black",
+    borderWidth: 1,
+    borderColor: "black",
+    width: width * 0.4,
+    padding: 10,
+  },
+  returnButton2: {
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 15,
+    backgroundColor: "black",
+    borderWidth: 1,
+    borderColor: "black",
+    height: width * 0.2,
+    marginTop: 10,
+    justifyContent: "center",
+  },
+  returnButtonFont: {
+    fontSize: 40,
+    color: "white",
+    textAlign: "center",
+  },
+
+  listButton: {
+    justifyContent: "center",
+    borderColor: "black",
+    borderWidth: 1,
+    height: width * 0.3,
+    backgroundColor: "#FFE278",
+  },
+  listButtonTop: {
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    justifyContent: "center",
+    borderColor: "black",
+    borderWidth: 1,
+    height: width * 0.3,
+    backgroundColor: "#FFE278",
+  },
+  listButtonDisabled: {
+    justifyContent: "center",
+    backgroundColor: "white",
+    borderWidth: 1,
+    height: width * 0.3,
+    borderColor: "black",
+  },
+  listButtonDisabledTop: {
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    justifyContent: "center",
+    backgroundColor: "white",
+    borderWidth: 1,
+    height: width * 0.3,
+    borderColor: "black",
+  },
+  listButtonFont: {
+    fontSize: 35,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+
+  goalsGroup: {
+    flexDirection: "row",
+    marginVertical: 10,
+    justifyContent: "center",
+  },
+  goalsText: {
+    fontSize: width * 0.1,
+    paddingHorizontal: 20,
+    paddingVertical: 3,
+  },
+  goalsInput: {
+    alignSelf: "center",
+    borderWidth: 1,
+    width: width * 0.5,
+    height: width * 0.1,
+    marginBottom: 15,
+  },
+
+  input: {
+    width: width * 0.85,
+    height: width * 0.17,
+    fontSize: 30,
+    paddingHorizontal: 20,
+    color: "black",
+  },
+  inputGroup: {
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 15,
+    backgroundColor: "white",
+    padding: 10,
+    margin: 10,
   },
 });
