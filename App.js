@@ -51,7 +51,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Regiment Editor">
+      <Stack.Navigator initialRouteName="Login">
         <Stack.Screen
           name="Login"
           component={LoginScreen}
@@ -249,15 +249,16 @@ function RegistrationScreen({ navigation, route }) {
 }
 
 function EditingScreen({ navigation, route }) {
-  // let { loginData } = route.params;
-  // let indicies = [];
-  // if (loginData[0].usrRegiment.length != 0) {
-  //   indicies = loginData[0].usrRegiment[0];
-  // } else {
-  //   indicies = [0, 1, 2, 3, 4, 0, 1];
-  // }
-  let indicies = [0, 1, 2, 3, 4, 0, 1];
+  let { loginData } = route.params;
+  let indicies = [];
   let [saved, setSave] = useState(true);
+
+  if (loginData[0].usrRegiment.length != 0) {
+    indicies = loginData[0].usrRegiment[0];
+  } else {
+    indicies = [0, 1, 2, 3, 4, 0, 1];
+  }
+
   const scrollRef1 = React.useRef(null);
   const scrollRef2 = React.useRef(null);
   const scrollRef3 = React.useRef(null);
@@ -287,6 +288,9 @@ function EditingScreen({ navigation, route }) {
   return (
     <>
       <View style={styles.container2}>
+        <Text style={{ fontWeight: "bold", textAlign: "center", fontSize: 20 }}>
+          Swipe the white lines to edit.
+        </Text>
         <Text style={styles.label}>Sunday</Text>
         <SwiperFlatList
           ref={scrollRef1}
@@ -298,8 +302,8 @@ function EditingScreen({ navigation, route }) {
             </View>
           )}
         />
-
         <Text style={styles.label}>Monday</Text>
+
         <SwiperFlatList
           ref={scrollRef2}
           index={indicies[1]}
@@ -365,39 +369,44 @@ function EditingScreen({ navigation, route }) {
             </View>
           )}
         />
-        <Button
-          title="Save Regiment"
-          onPress={() => {
-            let selections = [
-              scrollRef1.current.getCurrentIndex(),
-              scrollRef2.current.getCurrentIndex(),
-              scrollRef3.current.getCurrentIndex(),
-              scrollRef4.current.getCurrentIndex(),
-              scrollRef5.current.getCurrentIndex(),
-              scrollRef6.current.getCurrentIndex(),
-              scrollRef7.current.getCurrentIndex(),
-            ];
-            console.log(selections);
-            newRegiment = selections.map(handleSelections);
-            if (loginData[0].usrRegiment.length != 0) {
-              clearArray(loginData[0].usrRegiment);
-              loginData[0].usrRegiment.push(newRegiment);
-            } else {
-              loginData[0].usrRegiment.push(newRegiment);
-            }
-            setSave(false);
-          }}
-        ></Button>
-
-        <Button
-          disabled={saved}
-          title="Return to Workout Selection"
-          onPress={() => {
-            navigation.navigate("Regiment Selection", {
-              loginData: loginData,
-            });
-          }}
-        ></Button>
+        <View style={styles.buttonGroup1}>
+          <Pressable
+            style={styles.saveButton}
+            onPress={() => {
+              let selections = [
+                scrollRef1.current.getCurrentIndex(),
+                scrollRef2.current.getCurrentIndex(),
+                scrollRef3.current.getCurrentIndex(),
+                scrollRef4.current.getCurrentIndex(),
+                scrollRef5.current.getCurrentIndex(),
+                scrollRef6.current.getCurrentIndex(),
+                scrollRef7.current.getCurrentIndex(),
+              ];
+              console.log(selections);
+              newRegiment = selections.map(handleSelections);
+              if (loginData[0].usrRegiment.length != 0) {
+                clearArray(loginData[0].usrRegiment);
+                loginData[0].usrRegiment.push(newRegiment);
+              } else {
+                loginData[0].usrRegiment.push(newRegiment);
+              }
+              setSave(false);
+            }}
+          >
+            <Text style={styles.saveButtonFont}>Save Regiment</Text>
+          </Pressable>
+          <Pressable
+            style={saved ? styles.disabledButton : styles.returnButton3}
+            disabled={saved}
+            onPress={() => {
+              navigation.navigate("Regiment Selection", {
+                loginData: loginData,
+              });
+            }}
+          >
+            <Text style={styles.returnButtonFont2}>Workout Selection</Text>
+          </Pressable>
+        </View>
       </View>
     </>
   );
@@ -499,130 +508,166 @@ function GoalsScreen({ navigation, route }) {
   return (
     <>
       <View style={styles.container}>
-        <Text>Select a group of Goals to view and edit.</Text>
-        <View style={styles.buttonGroup1}>
-          <Pressable
-            style={styles.button}
-            onPress={() => {
-              setCurGroup("Save Push Workout Goals");
-              setDispGoals(usrPushGoals);
-              setDispMaxes(usrPushMaxes);
-              setDispExercise([
-                "Incline Benchpress",
-                "Flat Benchpress",
-                "Chest Flys",
-              ]);
-              setGoal1(0);
-              setGoal2(0);
-              setGoal3(0);
-              openGate(false);
-            }}
-          >
-            <Text>Push</Text>
-          </Pressable>
-          <Pressable
-            style={styles.button}
-            onPress={() => {
-              setCurGroup("Save Pull Workout Goals");
-              setDispGoals(usrPullGoals);
-              setDispMaxes(usrPullMaxes);
-              setDispExercise(["Barbell Rows", "Lat Pull Down", "Cable Rows"]);
-              setGoal1(0);
-              setGoal2(0);
-              setGoal3(0);
-              openGate(false);
-            }}
-          >
-            <Text>Pull</Text>
-          </Pressable>
+        <View style={styles.goalsInputGroup}>
+          <Text style={styles.instruction}>
+            Select a group to view and edit.
+          </Text>
+          <View style={styles.buttonGroup1}>
+            <Pressable
+              style={styles.button}
+              onPress={() => {
+                setCurGroup("Save Push Workout Goals");
+                setDispGoals(usrPushGoals);
+                setDispMaxes(usrPushMaxes);
+                setDispExercise([
+                  "Incline Benchpress",
+                  "Flat Benchpress",
+                  "Chest Flys",
+                ]);
+                setGoal1(0);
+                setGoal2(0);
+                setGoal3(0);
+                openGate(false);
+              }}
+            >
+              <Text style={styles.buttonFont}>Push</Text>
+            </Pressable>
+            <Pressable
+              style={styles.button}
+              onPress={() => {
+                setCurGroup("Save Pull Workout Goals");
+                setDispGoals(usrPullGoals);
+                setDispMaxes(usrPullMaxes);
+                setDispExercise([
+                  "Barbell Rows",
+                  "Lat Pull Down",
+                  "Cable Rows",
+                ]);
+                setGoal1(0);
+                setGoal2(0);
+                setGoal3(0);
+                openGate(false);
+              }}
+            >
+              <Text style={styles.buttonFont}>Pull</Text>
+            </Pressable>
+          </View>
+          <View style={styles.buttonGroup1}>
+            <Pressable
+              style={styles.button}
+              onPress={() => {
+                setCurGroup("Save Leg Workout Goals");
+                setDispGoals(usrLegGoals);
+                setDispMaxes(usrLegMaxes);
+                setDispExercise(["Front Squat", "Back Squat", "Deadlift"]);
+                setGoal1(0);
+                setGoal2(0);
+                setGoal3(0);
+                openGate(false);
+              }}
+            >
+              <Text style={styles.buttonFont}>Legs</Text>
+            </Pressable>
+            <Pressable
+              style={styles.button}
+              onPress={() => {
+                setCurGroup("Save Shoulder Workout Goals");
+                setDispGoals(usrShoGoals);
+                setDispMaxes(usrShoMaxes);
+                setDispExercise([
+                  "Lateral Raise",
+                  "Overhead Press",
+                  "Face Pulls",
+                ]);
+                setGoal1(0);
+                setGoal2(0);
+                setGoal3(0);
+                openGate(false);
+              }}
+            >
+              <Text style={styles.buttonFont}>Shoulders</Text>
+            </Pressable>
+          </View>
+          <Text style={styles.label}>{dispExercise[0]}</Text>
+          <View style={styles.goalsGroup}>
+            <Text style={styles.goalsText}>
+              Max -
+              <Text style={{ fontWeight: "bold" }}>{dispMaxes[0]}lbs.</Text>
+            </Text>
+            <Text style={styles.goalsText}>
+              Goal -
+              <Text style={{ fontWeight: "bold" }}>{dispGoals[0]}lbs.</Text>
+            </Text>
+          </View>
+          <TextInput
+            style={styles.goalsInput}
+            onChangeText={setGoal1}
+          ></TextInput>
+          <Text style={styles.label}>{dispExercise[1]}</Text>
+          <View style={styles.goalsGroup}>
+            <Text style={styles.goalsText}>
+              Max -
+              <Text style={{ fontWeight: "bold" }}>{dispMaxes[1]}lbs.</Text>
+            </Text>
+            <Text style={styles.goalsText}>
+              Goal -
+              <Text style={{ fontWeight: "bold" }}>{dispGoals[1]}lbs.</Text>
+            </Text>
+          </View>
+          <TextInput
+            style={styles.goalsInput}
+            onChangeText={setGoal2}
+          ></TextInput>
+          <Text style={styles.label}>{dispExercise[2]}</Text>
+          <View style={styles.goalsGroup}>
+            <Text style={styles.goalsText}>
+              Max -
+              <Text style={{ fontWeight: "bold" }}>{dispMaxes[2]}lbs.</Text>
+            </Text>
+            <Text style={styles.goalsText}>
+              Goal -
+              <Text style={{ fontWeight: "bold" }}>{dispGoals[2]}lbs.</Text>
+            </Text>
+          </View>
+          <TextInput
+            style={styles.goalsInput}
+            onChangeText={setGoal3}
+          ></TextInput>
         </View>
         <View style={styles.buttonGroup1}>
-          <Button
-            style={styles.button}
-            title="Legs"
+          <Pressable
+            style={styles.saveButton}
+            disabled={gate}
             onPress={() => {
-              setCurGroup("Save Leg Workout Goals");
-              setDispGoals(usrLegGoals);
-              setDispMaxes(usrLegMaxes);
-              setDispExercise(["Front Squat", "Back Squat", "Deadlift"]);
-              setGoal1(0);
-              setGoal2(0);
-              setGoal3(0);
-              openGate(false);
+              if (curGroup == "Save Push Workout Goals") {
+                clearArray(loginData[0].usrGoals[0]);
+                loginData[0].usrGoals[0].push(goal1, goal2, goal3);
+              } else if (curGroup == "Save Pull Workout Goals") {
+                clearArray(loginData[0].usrGoals[1]);
+                loginData[0].usrGoals[1].push(goal1, goal2, goal3);
+              } else if (curGroup == "Save Leg Workout Goals") {
+                clearArray(loginData[0].usrGoals[2]);
+                loginData[0].usrGoals[2].push(goal1, goal2, goal3);
+              } else if (curGroup == "Save Shoulder Workout Goals") {
+                clearArray(loginData[0].usrGoals[3]);
+                loginData[0].usrGoals[3].push(goal1, goal2, goal3);
+              }
+              openGate(true);
             }}
-          ></Button>
-          <Button
-            style={styles.button}
-            title="Shoulders"
+          >
+            <Text style={styles.saveButtonFont}>{curGroup}</Text>
+          </Pressable>
+          <Pressable
+            style={styles.returnButton3}
             onPress={() => {
-              setCurGroup("Save Shoulder Workout Goals");
-              setDispGoals(usrShoGoals);
-              setDispMaxes(usrShoMaxes);
-              setDispExercise([
-                "Lateral Raise",
-                "Overhead Press",
-                "Face Pulls",
-              ]);
-              setGoal1(0);
-              setGoal2(0);
-              setGoal3(0);
-              openGate(false);
+              navigation.navigate("Regiment Selection", {
+                loginData: loginData,
+              });
             }}
-          ></Button>
+          >
+            <Text style={styles.returnButtonFont2}>Workout Selection</Text>
+          </Pressable>
         </View>
-        <Text style={styles.label}>{dispExercise[0]}</Text>
-        <View style={styles.goalsGroup}>
-          <Text style={styles.goalsText}>Max - {dispMaxes[0]}</Text>
-          <Text style={styles.goalsText}>Goal - {dispGoals[0]}</Text>
-        </View>
-        <TextInput
-          style={styles.goalsInput}
-          onChangeText={setGoal1}
-        ></TextInput>
-        <Text style={styles.label}>{dispExercise[1]}</Text>
-        <View style={styles.goalsGroup}>
-          <Text style={styles.goalsText}>Max - {dispMaxes[1]}</Text>
-          <Text style={styles.goalsText}>Goal - {dispGoals[1]}</Text>
-        </View>
-        <TextInput
-          style={styles.goalsInput}
-          onChangeText={setGoal2}
-        ></TextInput>
-        <Text style={styles.label}>{dispExercise[2]}</Text>
-        <View style={styles.goalsGroup}>
-          <Text style={styles.goalsText}>Max - {dispMaxes[2]}</Text>
-          <Text style={styles.goalsText}>Goal - {dispGoals[2]}</Text>
-        </View>
-        <TextInput
-          style={styles.goalsInput}
-          onChangeText={setGoal3}
-        ></TextInput>
-        <Button
-          title={curGroup}
-          disabled={gate}
-          onPress={() => {
-            if (curGroup == "Save Push Workout Goals") {
-              clearArray(loginData[0].usrGoals[0]);
-              loginData[0].usrGoals[0].push(goal1, goal2, goal3);
-            } else if (curGroup == "Save Pull Workout Goals") {
-              clearArray(loginData[0].usrGoals[1]);
-              loginData[0].usrGoals[1].push(goal1, goal2, goal3);
-            } else if (curGroup == "Save Leg Workout Goals") {
-              clearArray(loginData[0].usrGoals[2]);
-              loginData[0].usrGoals[2].push(goal1, goal2, goal3);
-            } else if (curGroup == "Save Shoulder Workout Goals") {
-              clearArray(loginData[0].usrGoals[3]);
-              loginData[0].usrGoals[3].push(goal1, goal2, goal3);
-            }
-            openGate(true);
-          }}
-        ></Button>
-        <Button
-          title="Return to Workout Selection"
-          onPress={() => {
-            navigation.navigate("Regiment Selection", { loginData: loginData });
-          }}
-        ></Button>
       </View>
     </>
   );
@@ -635,18 +680,25 @@ function CurrentExerciseScreen({ navigation, route }) {
   let usrPullGoals = loginData[0].usrGoals[1];
   let usrLegGoals = loginData[0].usrGoals[2];
   let usrShoGoals = loginData[0].usrGoals[3];
-
+  // let usrPushGoals = ["130", "140", "150"];
+  // let usrPullGoals = ["130", "140", "150"];
+  // let usrLegGoals = ["160", "170", "180"];
+  // let usrShoGoals = ["190", "200", "210"];
   let usrPushMaxes = loginData[0].usrMaxes[0];
   let usrPullMaxes = loginData[0].usrMaxes[1];
   let usrLegMaxes = loginData[0].usrMaxes[2];
   let usrShoMaxes = loginData[0].usrMaxes[3];
-
+  // let usrPushMaxes = ["135", "145", "155"];
+  // let usrPullMaxes = ["135", "145", "155"];
+  // let usrLegMaxes = ["235", "245", "255"];
+  // let usrShoMaxes = ["335", "345", "355"];
   let [reps, setReps] = useState(0);
 
   let usrReg = loginData[0].usrRegiment;
   const d = new Date();
   let day = d.getDay();
   let regIndex = usrReg[0][day];
+  // let regIndex = 3;
 
   let [curWeight1, setCurWeight1] = useState();
   let [curWeight2, setCurWeight2] = useState();
@@ -667,191 +719,274 @@ function CurrentExerciseScreen({ navigation, route }) {
       if (curPush === pushUps) {
         return (
           <>
-            <Text>Warmp up your push group with some Push Ups.</Text>
-            <Text>{reps}</Text>
-            <View>
-              <Button
+            <View style={styles.container}>
+              <Text style={styles.instruction}>
+                Warmp up your push group with some Push Ups.
+              </Text>
+              <View style={styles.counterGroup}>
+                <Text style={styles.counter}>{reps}</Text>
+                <View style={styles.buttonGroup1}>
+                  <Pressable
+                    style={styles.rep1Button}
+                    onPress={() => {
+                      setReps(reps + 1);
+                    }}
+                  >
+                    <Text style={styles.rep1ButtonFont}>+1 Rep</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.rep0Button}
+                    onPress={() => {
+                      setReps((reps = 0));
+                    }}
+                  >
+                    <Text style={styles.rep0ButtonFont}>Set Reps to 0</Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={() => {
+                    setCurPush(inclineBench);
+                    setReps((reps = 0));
+                  }}
+                >
+                  <Text style={styles.nextButtonFont}>Next Exercise</Text>
+                </Pressable>
+              </View>
+              <Pressable
+                style={styles.returnButton4}
                 onPress={() => {
-                  setReps(reps + 1);
+                  navigation.navigate("Regiment Selection", {
+                    loginData: loginData,
+                  });
                 }}
               >
-                +1 Rep
-              </Button>
-              <Button
-                onPress={() => {
-                  setReps((reps = 0));
-                }}
-              >
-                Set Reps to 0
-              </Button>
+                <Text style={styles.returnButtonFont3}>
+                  Return to Workout Selection
+                </Text>
+              </Pressable>
             </View>
-            <Button
-              title="Next Exercise"
-              onPress={() => {
-                setCurPush(inclineBench);
-                setReps((reps = 0));
-              }}
-            ></Button>
-            <Button
-              title="Return to Workout Selection"
-              onPress={() => {
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
-              }}
-            ></Button>
           </>
         );
       } else if (curPush === inclineBench) {
         return (
           <>
-            <Text>Now for some Incline Bench Press.</Text>
-            <Text>Reps: {reps}</Text>
-            <TextInput
-              placeholder="Press here to set your current weight."
-              onChangeText={setCurWeight1}
-            ></TextInput>
-            <Text>Current Goal: {usrPushGoals[0]}</Text>
-            <Text>Previous Max: {usrPushMaxes[0]}</Text>
-            <View>
-              <Button
+            <View style={styles.container}>
+              <Text style={styles.instruction}>
+                Exercise 1: Incline Benchpress
+              </Text>
+              <View style={styles.counterGroup}>
+                <TextInput
+                  style={styles.weightInput}
+                  placeholder="press to add weight"
+                  onChangeText={setCurWeight1}
+                ></TextInput>
+                <Text style={styles.goalsText}>
+                  Current Goal:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrPushGoals[0]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.goalsText}>
+                  Previous Max:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrPushMaxes[0]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.counter}>{reps}</Text>
+                <View style={styles.buttonGroup1}>
+                  <Pressable
+                    style={styles.rep1Button}
+                    onPress={() => {
+                      setReps(reps + 1);
+                    }}
+                  >
+                    <Text style={styles.rep1ButtonFont}>+1 Rep</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.rep0Button}
+                    onPress={() => {
+                      setReps((reps = 0));
+                    }}
+                  >
+                    <Text style={styles.rep0ButtonFont}>Set Reps to 0</Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={() => {
+                    setCurPush(flatBench);
+                    setReps((reps = 0));
+                  }}
+                >
+                  <Text style={styles.nextButtonFont}>Next Exercise</Text>
+                </Pressable>
+              </View>
+              <Pressable
+                style={styles.returnButton4}
                 onPress={() => {
-                  setReps(reps + 1);
+                  navigation.navigate("Regiment Selection", {
+                    loginData: loginData,
+                  });
                 }}
               >
-                +1 Rep
-              </Button>
-              <Button
-                onPress={() => {
-                  setReps((reps = 0));
-                }}
-              >
-                Set Reps to 0
-              </Button>
+                <Text style={styles.returnButtonFont3}>
+                  Return to Workout Selection
+                </Text>
+              </Pressable>
             </View>
-            <Button
-              title="Next Exercise"
-              onPress={() => {
-                setCurPush(flatBench);
-                setReps((reps = 0));
-              }}
-            ></Button>
-            <Button
-              title="Return to Workout Selection"
-              onPress={() => {
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
-              }}
-            ></Button>
           </>
         );
       } else if (curPush === flatBench) {
         return (
           <>
-            <Text>Flat Bench Press.</Text>
-            <Text>Reps: {reps}</Text>
-            <TextInput
-              placeholder="Press here to set your current weight."
-              onChangeText={setCurWeight2}
-            ></TextInput>
-            <Text>Current Goal: {usrPushGoals[1]}</Text>
-            <Text>Previous Max: {usrPushMaxes[1]}</Text>
-            <View>
-              <Button
+            <View style={styles.container}>
+              <Text style={styles.instruction}>
+                Exercise 2: Flat Benchpress
+              </Text>
+              <View style={styles.counterGroup}>
+                <TextInput
+                  style={styles.weightInput}
+                  placeholder="press to add weight"
+                  onChangeText={setCurWeight2}
+                ></TextInput>
+                <Text style={styles.goalsText}>
+                  Current Goal:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrPushGoals[1]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.goalsText}>
+                  Previous Max:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrPushMaxes[1]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.counter}>{reps}</Text>
+                <View style={styles.buttonGroup1}>
+                  <Pressable
+                    style={styles.rep1Button}
+                    onPress={() => {
+                      setReps(reps + 1);
+                    }}
+                  >
+                    <Text style={styles.rep1ButtonFont}>+1 Rep</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.rep0Button}
+                    onPress={() => {
+                      setReps((reps = 0));
+                    }}
+                  >
+                    <Text style={styles.rep0ButtonFont}>Set Reps to 0</Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={() => {
+                    setCurPush(chestFly);
+                    setReps((reps = 0));
+                  }}
+                >
+                  <Text style={styles.nextButtonFont}>Next Exercise</Text>
+                </Pressable>
+              </View>
+              <Pressable
+                style={styles.returnButton4}
                 onPress={() => {
-                  setReps(reps + 1);
+                  navigation.navigate("Regiment Selection", {
+                    loginData: loginData,
+                  });
                 }}
               >
-                +1 Rep
-              </Button>
-              <Button
-                onPress={() => {
-                  setReps((reps = 0));
-                }}
-              >
-                Set Reps to 0
-              </Button>
+                <Text style={styles.returnButtonFont3}>
+                  Return to Workout Selection
+                </Text>
+              </Pressable>
             </View>
-            <Button
-              title="Next Exercise"
-              onPress={() => {
-                setCurPush(chestFly);
-                setReps((reps = 0));
-              }}
-            ></Button>
-            <Button
-              title="Return to Workout Selection"
-              onPress={() => {
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
-              }}
-            ></Button>
           </>
         );
       } else if (curPush === chestFly) {
         return (
           <>
-            <Text>Now for some Chest Flys.</Text>
-            <Text>Reps: {reps}</Text>
-            <TextInput
-              placeholder="Press here to set your current weight."
-              onChangeText={setCurWeight3}
-            ></TextInput>
-            <Text>Current Goal: {usrPushGoals[2]}</Text>
-            <Text>Previous Max: {usrPushMaxes[2]}</Text>
-            <View>
-              <Button
-                onPress={() => {
-                  setReps(reps + 1);
-                }}
-              >
-                +1 Rep
-              </Button>
-              <Button
-                onPress={() => {
-                  setReps((reps = 0));
-                }}
-              >
-                Set Reps to 0
-              </Button>
-            </View>
-            <Button
-              title="Complete Workout"
-              onPress={() => {
-                setReps((reps = 0));
-                if (Number(curWeight3) > Number(usrPushMaxes[2])) {
-                  newMax3 = curWeight3;
-                  console.log("new max achieved!");
-                } else {
-                  newMax3 = usrPushMaxes[2];
-                  console.log("almost there");
-                }
-                if (Number(curWeight2) > Number(usrPushMaxes[1])) {
-                  newMax2 = curWeight2;
-                  console.log("new max achieved!");
-                } else {
-                  newMax2 = usrPushMaxes[1];
-                  console.log("almost there");
-                }
-                if (Number(curWeight1) > Number(usrPushMaxes[0])) {
-                  newMax1 = curWeight1;
-                  console.log("new max achieved!");
-                } else {
-                  newMax1 = usrPushMaxes[0];
-                  console.log("almost there");
-                }
-                clearArray(loginData[0].usrMaxes[0]);
-                loginData[0].usrMaxes[0].push(newMax3);
-                loginData[0].usrMaxes[0].push(newMax2);
-                loginData[0].usrMaxes[0].push(newMax1);
+            <View style={styles.container}>
+              <Text style={styles.instruction}>Exercise 3: Chest Flys</Text>
+              <View style={styles.counterGroup}>
+                <TextInput
+                  style={styles.weightInput}
+                  placeholder="press to add weight"
+                  onChangeText={setCurWeight3}
+                ></TextInput>
+                <Text style={styles.goalsText}>
+                  Current Goal:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrPushGoals[2]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.goalsText}>
+                  Previous Max:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrPushMaxes[2]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.counter}>{reps}</Text>
+                <View style={styles.buttonGroup1}>
+                  <Pressable
+                    style={styles.rep1Button}
+                    onPress={() => {
+                      setReps(reps + 1);
+                    }}
+                  >
+                    <Text style={styles.rep1ButtonFont}>+1 Rep</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.rep0Button}
+                    onPress={() => {
+                      setReps((reps = 0));
+                    }}
+                  >
+                    <Text style={styles.rep0ButtonFont}>Set Reps to 0</Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={() => {
+                    setReps((reps = 0));
+                    if (Number(curWeight3) > Number(usrPushMaxes[2])) {
+                      newMax3 = curWeight3;
+                      console.log("new max achieved!");
+                    } else {
+                      newMax3 = usrPushMaxes[2];
+                      console.log("almost there");
+                    }
+                    if (Number(curWeight2) > Number(usrPushMaxes[1])) {
+                      newMax2 = curWeight2;
+                      console.log("new max achieved!");
+                    } else {
+                      newMax2 = usrPushMaxes[1];
+                      console.log("almost there");
+                    }
+                    if (Number(curWeight1) > Number(usrPushMaxes[0])) {
+                      newMax1 = curWeight1;
+                      console.log("new max achieved!");
+                    } else {
+                      newMax1 = usrPushMaxes[0];
+                      console.log("almost there");
+                    }
+                    clearArray(loginData[0].usrMaxes[0]);
+                    loginData[0].usrMaxes[0].push(newMax1);
+                    loginData[0].usrMaxes[0].push(newMax2);
+                    loginData[0].usrMaxes[0].push(newMax3);
 
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
-              }}
-            ></Button>
+                    navigation.navigate("Regiment Selection", {
+                      loginData: loginData,
+                    });
+                  }}
+                >
+                  <Text style={styles.nextButtonFont}>Complete Workout</Text>
+                </Pressable>
+              </View>
+            </View>
           </>
         );
       }
@@ -865,191 +1000,270 @@ function CurrentExerciseScreen({ navigation, route }) {
       if (curPull === pullUps) {
         return (
           <>
-            <Text>Warmp up your pull group with some Pull Ups.</Text>
-            <Text>{reps}</Text>
-            <View>
-              <Button
+            <View style={styles.container}>
+              <Text style={styles.instruction}>
+                Warmp up your pull group with some Pull Ups.
+              </Text>
+              <View style={styles.counterGroup}>
+                <Text style={styles.counter}>{reps}</Text>
+                <View style={styles.buttonGroup1}>
+                  <Pressable
+                    style={styles.rep1Button}
+                    onPress={() => {
+                      setReps(reps + 1);
+                    }}
+                  >
+                    <Text style={styles.rep1ButtonFont}>+1 Rep</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.rep0Button}
+                    onPress={() => {
+                      setReps((reps = 0));
+                    }}
+                  >
+                    <Text style={styles.rep0ButtonFont}>Set Reps to 0</Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={() => {
+                    setCurPull(barbellRows);
+                    setReps((reps = 0));
+                  }}
+                >
+                  <Text style={styles.nextButtonFont}>Next Exercise</Text>
+                </Pressable>
+              </View>
+              <Pressable
+                style={styles.returnButton4}
                 onPress={() => {
-                  setReps(reps + 1);
+                  navigation.navigate("Regiment Selection", {
+                    loginData: loginData,
+                  });
                 }}
               >
-                +1 Rep
-              </Button>
-              <Button
-                onPress={() => {
-                  setReps((reps = 0));
-                }}
-              >
-                Set Reps to 0
-              </Button>
+                <Text style={styles.returnButtonFont3}>
+                  Return to Workout Selection
+                </Text>
+              </Pressable>
             </View>
-            <Button
-              title="Next Exercise"
-              onPress={() => {
-                setCurPull(barbellRows);
-                setReps((reps = 0));
-              }}
-            ></Button>
-            <Button
-              title="Return to Workout Selection"
-              onPress={() => {
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
-              }}
-            ></Button>
           </>
         );
       } else if (curPull === barbellRows) {
         return (
           <>
-            <Text>Now for some Barbell Rows.</Text>
-            <Text>{reps}</Text>
-            <TextInput
-              placeholder="Press here to set your current weight."
-              onChangeText={setCurWeight1}
-            ></TextInput>
-            <Text>Current Goal: {usrPullGoals[0]}</Text>
-            <Text>Previous Max: {usrPullMaxes[0]}</Text>
-            <View>
-              <Button
+            <View style={styles.container}>
+              <Text style={styles.instruction}>Exercise 1: Barbell Rows</Text>
+              <View style={styles.counterGroup}>
+                <TextInput
+                  style={styles.weightInput}
+                  placeholder="press to add weight"
+                  onChangeText={setCurWeight1}
+                ></TextInput>
+                <Text style={styles.goalsText}>
+                  Current Goal:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrPullGoals[0]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.goalsText}>
+                  Previous Max:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrPullMaxes[0]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.counter}>{reps}</Text>
+                <View style={styles.buttonGroup1}>
+                  <Pressable
+                    style={styles.rep1Button}
+                    onPress={() => {
+                      setReps(reps + 1);
+                    }}
+                  >
+                    <Text style={styles.rep1ButtonFont}>+1 Rep</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.rep0Button}
+                    onPress={() => {
+                      setReps((reps = 0));
+                    }}
+                  >
+                    <Text style={styles.rep0ButtonFont}>Set Reps to 0</Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={() => {
+                    setCurPull(pullDowns);
+                    setReps((reps = 0));
+                  }}
+                >
+                  <Text style={styles.nextButtonFont}>Next Exercise</Text>
+                </Pressable>
+              </View>
+              <Pressable
+                style={styles.returnButton4}
                 onPress={() => {
-                  setReps(reps + 1);
+                  navigation.navigate("Regiment Selection", {
+                    loginData: loginData,
+                  });
                 }}
               >
-                +1 Rep
-              </Button>
-              <Button
-                onPress={() => {
-                  setReps((reps = 0));
-                }}
-              >
-                Set Reps to 0
-              </Button>
+                <Text style={styles.returnButtonFont3}>
+                  Return to Workout Selection
+                </Text>
+              </Pressable>
             </View>
-            <Button
-              title="Next Exercise"
-              onPress={() => {
-                setCurPull(pullDowns);
-                setReps((reps = 0));
-              }}
-            ></Button>
-            <Button
-              title="Return to Workout Selection"
-              onPress={() => {
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
-              }}
-            ></Button>
           </>
         );
       } else if (curPull === pullDowns) {
         return (
           <>
-            <Text>Lat Pull Downs.</Text>
-            <Text>{reps}</Text>
-            <TextInput
-              placeholder="Press here to set your current weight."
-              onChangeText={setCurWeight2}
-            ></TextInput>
-            <Text>Current Goal: {usrPullGoals[1]}</Text>
-            <Text>Previous Max: {usrPullMaxes[1]}</Text>
-            <View>
-              <Button
+            <View style={styles.container}>
+              <Text style={styles.instruction}>Exercise 2: Lat Pull Downs</Text>
+              <View style={styles.counterGroup}>
+                <TextInput
+                  style={styles.weightInput}
+                  placeholder="press to add weight"
+                  onChangeText={setCurWeight2}
+                ></TextInput>
+                <Text style={styles.goalsText}>
+                  Current Goal:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrPullGoals[1]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.goalsText}>
+                  Previous Max:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrPullMaxes[1]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.counter}>{reps}</Text>
+                <View style={styles.buttonGroup1}>
+                  <Pressable
+                    style={styles.rep1Button}
+                    onPress={() => {
+                      setReps(reps + 1);
+                    }}
+                  >
+                    <Text style={styles.rep1ButtonFont}>+1 Rep</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.rep0Button}
+                    onPress={() => {
+                      setReps((reps = 0));
+                    }}
+                  >
+                    <Text style={styles.rep0ButtonFont}>Set Reps to 0</Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={() => {
+                    setCurPull(cableRows);
+                    setReps((reps = 0));
+                  }}
+                >
+                  <Text style={styles.nextButtonFont}>Next Exercise</Text>
+                </Pressable>
+              </View>
+              <Pressable
+                style={styles.returnButton4}
                 onPress={() => {
-                  setReps(reps + 1);
+                  navigation.navigate("Regiment Selection", {
+                    loginData: loginData,
+                  });
                 }}
               >
-                +1 Rep
-              </Button>
-              <Button
-                onPress={() => {
-                  setReps((reps = 0));
-                }}
-              >
-                Set Reps to 0
-              </Button>
+                <Text style={styles.returnButtonFont3}>
+                  Return to Workout Selection
+                </Text>
+              </Pressable>
             </View>
-            <Button
-              title="Next Exercise"
-              onPress={() => {
-                setCurPull(cableRows);
-                setReps((reps = 0));
-              }}
-            ></Button>
-            <Button
-              title="Return to Workout Selection"
-              onPress={() => {
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
-              }}
-            ></Button>
           </>
         );
       } else if (curPull === cableRows) {
         return (
           <>
-            <Text>Now for some Cable Rows.</Text>
-            <Text>{reps}</Text>
-            <TextInput
-              placeholder="Press here to set your current weight."
-              onChangeText={setCurWeight3}
-            ></TextInput>
-            <Text>Current Goal: {usrPullGoals[2]}</Text>
-            <Text>Previous Max: {usrPullMaxes[2]}</Text>
-            <View>
-              <Button
-                onPress={() => {
-                  setReps(reps + 1);
-                }}
-              >
-                +1 Rep
-              </Button>
-              <Button
-                onPress={() => {
-                  setReps((reps = 0));
-                }}
-              >
-                Set Reps to 0
-              </Button>
-            </View>
-            <Button
-              title="Complete Workout"
-              onPress={() => {
-                setReps((reps = 0));
-                if (Number(curWeight3) > Number(usrPullMaxes[2])) {
-                  newMax3 = curWeight3;
-                  console.log("new max achieved!");
-                } else {
-                  newMax3 = usrPullMaxes[2];
-                  console.log("almost there");
-                }
-                if (Number(curWeight2) > Number(usrPullMaxes[1])) {
-                  newMax2 = curWeight2;
-                  console.log("new max achieved!");
-                } else {
-                  newMax2 = usrPullMaxes[1];
-                  console.log("almost there");
-                }
-                if (Number(curWeight1) > Number(usrPullMaxes[0])) {
-                  newMax1 = curWeight1;
-                  console.log("new max achieved!");
-                } else {
-                  newMax1 = usrPullMaxes[0];
-                  console.log("almost there");
-                }
-                clearArray(loginData[0].usrMaxes[1]);
-                loginData[0].usrMaxes[1].push(newMax1);
-                loginData[0].usrMaxes[1].push(newMax2);
-                loginData[0].usrMaxes[1].push(newMax3);
+            <View style={styles.container}>
+              <Text style={styles.instruction}>Exercise 3: Cable Rows</Text>
+              <View style={styles.counterGroup}>
+                <TextInput
+                  style={styles.weightInput}
+                  placeholder="press to add weight"
+                  onChangeText={setCurWeight3}
+                ></TextInput>
+                <Text style={styles.goalsText}>
+                  Current Goal:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrPullGoals[2]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.goalsText}>
+                  Previous Max:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrPullMaxes[2]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.counter}>{reps}</Text>
+                <View style={styles.buttonGroup1}>
+                  <Pressable
+                    style={styles.rep1Button}
+                    onPress={() => {
+                      setReps(reps + 1);
+                    }}
+                  >
+                    <Text style={styles.rep1ButtonFont}>+1 Rep</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.rep0Button}
+                    onPress={() => {
+                      setReps((reps = 0));
+                    }}
+                  >
+                    <Text style={styles.rep0ButtonFont}>Set Reps to 0</Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={() => {
+                    setReps((reps = 0));
+                    if (Number(curWeight3) > Number(usrPullMaxes[2])) {
+                      newMax3 = curWeight3;
+                      console.log("new max achieved!");
+                    } else {
+                      newMax3 = usrPullMaxes[2];
+                      console.log("almost there");
+                    }
+                    if (Number(curWeight2) > Number(usrPullMaxes[1])) {
+                      newMax2 = curWeight2;
+                      console.log("new max achieved!");
+                    } else {
+                      newMax2 = usrPullMaxes[1];
+                      console.log("almost there");
+                    }
+                    if (Number(curWeight1) > Number(usrPullMaxes[0])) {
+                      newMax1 = curWeight1;
+                      console.log("new max achieved!");
+                    } else {
+                      newMax1 = usrPullMaxes[0];
+                      console.log("almost there");
+                    }
+                    clearArray(loginData[0].usrMaxes[1]);
+                    loginData[0].usrMaxes[1].push(newMax3);
+                    loginData[0].usrMaxes[1].push(newMax2);
+                    loginData[0].usrMaxes[1].push(newMax1);
 
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
-              }}
-            ></Button>
+                    navigation.navigate("Regiment Selection", {
+                      loginData: loginData,
+                    });
+                  }}
+                >
+                  <Text style={styles.nextButtonFont}>Complete Workout</Text>
+                </Pressable>
+              </View>
+            </View>
           </>
         );
       }
@@ -1063,191 +1277,270 @@ function CurrentExerciseScreen({ navigation, route }) {
       if (curLegs === lunges) {
         return (
           <>
-            <Text>Warm up with some Lunges (no weight).</Text>
-            <Text>{reps}</Text>
-            <View>
-              <Button
+            <View style={styles.container}>
+              <Text style={styles.instruction}>
+                Warmp up your legs with some Lunges.
+              </Text>
+              <View style={styles.counterGroup}>
+                <Text style={styles.counter}>{reps}</Text>
+                <View style={styles.buttonGroup1}>
+                  <Pressable
+                    style={styles.rep1Button}
+                    onPress={() => {
+                      setReps(reps + 1);
+                    }}
+                  >
+                    <Text style={styles.rep1ButtonFont}>+1 Rep</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.rep0Button}
+                    onPress={() => {
+                      setReps((reps = 0));
+                    }}
+                  >
+                    <Text style={styles.rep0ButtonFont}>Set Reps to 0</Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={() => {
+                    setCurLegs(frontSquats);
+                    setReps((reps = 0));
+                  }}
+                >
+                  <Text style={styles.nextButtonFont}>Next Exercise</Text>
+                </Pressable>
+              </View>
+              <Pressable
+                style={styles.returnButton4}
                 onPress={() => {
-                  setReps(reps + 1);
+                  navigation.navigate("Regiment Selection", {
+                    loginData: loginData,
+                  });
                 }}
               >
-                +1 Rep
-              </Button>
-              <Button
-                onPress={() => {
-                  setReps((reps = 0));
-                }}
-              >
-                Set Reps to 0
-              </Button>
+                <Text style={styles.returnButtonFont3}>
+                  Return to Workout Selection
+                </Text>
+              </Pressable>
             </View>
-            <Button
-              title="Next Exercise"
-              onPress={() => {
-                setCurLegs(frontSquats);
-                setReps((reps = 0));
-              }}
-            ></Button>
-            <Button
-              title="Return to Workout Selection"
-              onPress={() => {
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
-              }}
-            ></Button>
           </>
         );
       } else if (curLegs === frontSquats) {
         return (
           <>
-            <Text>Now for some Front Squats.</Text>
-            <Text>{reps}</Text>
-            <TextInput
-              placeholder="Press here to set your current weight."
-              onChangeText={setCurWeight1}
-            ></TextInput>
-            <Text>Current Goal: {usrLegGoals[0]}</Text>
-            <Text>Previous Max: {usrLegMaxes[0]}</Text>
-            <View>
-              <Button
+            <View style={styles.container}>
+              <Text style={styles.instruction}>Exercise 1: Front Squats</Text>
+              <View style={styles.counterGroup}>
+                <TextInput
+                  style={styles.weightInput}
+                  placeholder="press to add weight"
+                  onChangeText={setCurWeight1}
+                ></TextInput>
+                <Text style={styles.goalsText}>
+                  Current Goal:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrLegGoals[0]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.goalsText}>
+                  Previous Max:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrLegMaxes[0]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.counter}>{reps}</Text>
+                <View style={styles.buttonGroup1}>
+                  <Pressable
+                    style={styles.rep1Button}
+                    onPress={() => {
+                      setReps(reps + 1);
+                    }}
+                  >
+                    <Text style={styles.rep1ButtonFont}>+1 Rep</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.rep0Button}
+                    onPress={() => {
+                      setReps((reps = 0));
+                    }}
+                  >
+                    <Text style={styles.rep0ButtonFont}>Set Reps to 0</Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={() => {
+                    setCurLegs(backSquats);
+                    setReps((reps = 0));
+                  }}
+                >
+                  <Text style={styles.nextButtonFont}>Next Exercise</Text>
+                </Pressable>
+              </View>
+              <Pressable
+                style={styles.returnButton4}
                 onPress={() => {
-                  setReps(reps + 1);
+                  navigation.navigate("Regiment Selection", {
+                    loginData: loginData,
+                  });
                 }}
               >
-                +1 Rep
-              </Button>
-              <Button
-                onPress={() => {
-                  setReps((reps = 0));
-                }}
-              >
-                Set Reps to 0
-              </Button>
+                <Text style={styles.returnButtonFont3}>
+                  Return to Workout Selection
+                </Text>
+              </Pressable>
             </View>
-            <Button
-              title="Next Exercise"
-              onPress={() => {
-                setCurLegs(backSquats);
-                setReps((reps = 0));
-              }}
-            ></Button>
-            <Button
-              title="Return to Workout Selection"
-              onPress={() => {
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
-              }}
-            ></Button>
           </>
         );
       } else if (curLegs === backSquats) {
         return (
           <>
-            <Text>Now for Back Squats.</Text>
-            <Text>{reps}</Text>
-            <TextInput
-              placeholder="Press here to set your current weight."
-              onChangeText={setCurWeight2}
-            ></TextInput>
-            <Text>Current Goal: {usrLegGoals[1]}</Text>
-            <Text>Previous Max: {usrLegMaxes[1]}</Text>
-            <View>
-              <Button
+            <View style={styles.container}>
+              <Text style={styles.instruction}>Exercise 2: Back Squats</Text>
+              <View style={styles.counterGroup}>
+                <TextInput
+                  style={styles.weightInput}
+                  placeholder="press to add weight"
+                  onChangeText={setCurWeight2}
+                ></TextInput>
+                <Text style={styles.goalsText}>
+                  Current Goal:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrLegGoals[1]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.goalsText}>
+                  Previous Max:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrLegMaxes[1]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.counter}>{reps}</Text>
+                <View style={styles.buttonGroup1}>
+                  <Pressable
+                    style={styles.rep1Button}
+                    onPress={() => {
+                      setReps(reps + 1);
+                    }}
+                  >
+                    <Text style={styles.rep1ButtonFont}>+1 Rep</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.rep0Button}
+                    onPress={() => {
+                      setReps((reps = 0));
+                    }}
+                  >
+                    <Text style={styles.rep0ButtonFont}>Set Reps to 0</Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={() => {
+                    setCurLegs(deadlifts);
+                    setReps((reps = 0));
+                  }}
+                >
+                  <Text style={styles.nextButtonFont}>Next Exercise</Text>
+                </Pressable>
+              </View>
+              <Pressable
+                style={styles.returnButton4}
                 onPress={() => {
-                  setReps(reps + 1);
+                  navigation.navigate("Regiment Selection", {
+                    loginData: loginData,
+                  });
                 }}
               >
-                +1 Rep
-              </Button>
-              <Button
-                onPress={() => {
-                  setReps((reps = 0));
-                }}
-              >
-                Set Reps to 0
-              </Button>
+                <Text style={styles.returnButtonFont3}>
+                  Return to Workout Selection
+                </Text>
+              </Pressable>
             </View>
-            <Button
-              title="Next Exercise"
-              onPress={() => {
-                setCurLegs(deadlifts);
-                setReps((reps = 0));
-              }}
-            ></Button>
-            <Button
-              title="Return to Workout Selection"
-              onPress={() => {
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
-              }}
-            ></Button>
           </>
         );
       } else if (curLegs === deadlifts) {
         return (
           <>
-            <Text>Finally, some Deadlifts.</Text>
-            <Text>{reps}</Text>
-            <TextInput
-              placeholder="Press here to set your current weight."
-              onChangeText={setCurWeight3}
-            ></TextInput>
-            <Text>Current Goal: {usrLegGoals[2]}</Text>
-            <Text>Previous Max: {usrLegMaxes[2]}</Text>
-            <View>
-              <Button
-                onPress={() => {
-                  setReps(reps + 1);
-                }}
-              >
-                +1 Rep
-              </Button>
-              <Button
-                onPress={() => {
-                  setReps((reps = 0));
-                }}
-              >
-                Set Reps to 0
-              </Button>
-            </View>
-            <Button
-              title="Complete Workout"
-              onPress={() => {
-                setReps((reps = 0));
-                if (Number(curWeight3) > Number(usrLegMaxes[2])) {
-                  newMax3 = curWeight3;
-                  console.log("new max achieved!");
-                } else {
-                  newMax3 = usrLegMaxes[2];
-                  console.log("almost there");
-                }
-                if (Number(curWeight2) > Number(usrLegMaxes[1])) {
-                  newMax2 = curWeight2;
-                  console.log("new max achieved!");
-                } else {
-                  newMax2 = usrLegMaxes[1];
-                  console.log("almost there");
-                }
-                if (Number(curWeight1) > Number(usrLegMaxes[0])) {
-                  newMax1 = curWeight1;
-                  console.log("new max achieved!");
-                } else {
-                  newMax1 = usrLegMaxes[0];
-                  console.log("almost there");
-                }
-                clearArray(loginData[0].usrMaxes[2]);
-                loginData[0].usrMaxes[2].push(newMax1);
-                loginData[0].usrMaxes[2].push(newMax2);
-                loginData[0].usrMaxes[2].push(newMax3);
+            <View style={styles.container}>
+              <Text style={styles.instruction}>Exercise 3: Deadlifts</Text>
+              <View style={styles.counterGroup}>
+                <TextInput
+                  style={styles.weightInput}
+                  placeholder="press to add weight"
+                  onChangeText={setCurWeight3}
+                ></TextInput>
+                <Text style={styles.goalsText}>
+                  Current Goal:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrLegGoals[2]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.goalsText}>
+                  Previous Max:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrLegMaxes[2]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.counter}>{reps}</Text>
+                <View style={styles.buttonGroup1}>
+                  <Pressable
+                    style={styles.rep1Button}
+                    onPress={() => {
+                      setReps(reps + 1);
+                    }}
+                  >
+                    <Text style={styles.rep1ButtonFont}>+1 Rep</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.rep0Button}
+                    onPress={() => {
+                      setReps((reps = 0));
+                    }}
+                  >
+                    <Text style={styles.rep0ButtonFont}>Set Reps to 0</Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={() => {
+                    setReps((reps = 0));
+                    if (Number(curWeight3) > Number(usrLegMaxes[2])) {
+                      newMax3 = curWeight3;
+                      console.log("new max achieved!");
+                    } else {
+                      newMax3 = usrLegMaxes[2];
+                      console.log("almost there");
+                    }
+                    if (Number(curWeight2) > Number(usrLegMaxes[1])) {
+                      newMax2 = curWeight2;
+                      console.log("new max achieved!");
+                    } else {
+                      newMax2 = usrLegMaxes[1];
+                      console.log("almost there");
+                    }
+                    if (Number(curWeight1) > Number(usrLegMaxes[0])) {
+                      newMax1 = curWeight1;
+                      console.log("new max achieved!");
+                    } else {
+                      newMax1 = usrLegMaxes[0];
+                      console.log("almost there");
+                    }
+                    clearArray(loginData[0].usrMaxes[2]);
+                    loginData[0].usrMaxes[2].push(newMax1);
+                    loginData[0].usrMaxes[2].push(newMax2);
+                    loginData[0].usrMaxes[2].push(newMax3);
 
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
-              }}
-            ></Button>
+                    navigation.navigate("Regiment Selection", {
+                      loginData: loginData,
+                    });
+                  }}
+                >
+                  <Text style={styles.nextButtonFont}>Complete Workout</Text>
+                </Pressable>
+              </View>
+            </View>
           </>
         );
       }
@@ -1261,191 +1554,270 @@ function CurrentExerciseScreen({ navigation, route }) {
       if (curShoul === teaCups) {
         return (
           <>
-            <Text>Warmp up with some Tea Cups.</Text>
-            <Text>{reps}</Text>
-            <View>
-              <Button
+            <View style={styles.container}>
+              <Text style={styles.instruction}>
+                Warmp up your shoulders with some Teacups.
+              </Text>
+              <View style={styles.counterGroup}>
+                <Text style={styles.counter}>{reps}</Text>
+                <View style={styles.buttonGroup1}>
+                  <Pressable
+                    style={styles.rep1Button}
+                    onPress={() => {
+                      setReps(reps + 1);
+                    }}
+                  >
+                    <Text style={styles.rep1ButtonFont}>+1 Rep</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.rep0Button}
+                    onPress={() => {
+                      setReps((reps = 0));
+                    }}
+                  >
+                    <Text style={styles.rep0ButtonFont}>Set Reps to 0</Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={() => {
+                    setCurShoul(sideRaise);
+                    setReps((reps = 0));
+                  }}
+                >
+                  <Text style={styles.nextButtonFont}>Next Exercise</Text>
+                </Pressable>
+              </View>
+              <Pressable
+                style={styles.returnButton4}
                 onPress={() => {
-                  setReps(reps + 1);
+                  navigation.navigate("Regiment Selection", {
+                    loginData: loginData,
+                  });
                 }}
               >
-                +1 Rep
-              </Button>
-              <Button
-                onPress={() => {
-                  setReps((reps = 0));
-                }}
-              >
-                Set Reps to 0
-              </Button>
+                <Text style={styles.returnButtonFont3}>
+                  Return to Workout Selection
+                </Text>
+              </Pressable>
             </View>
-            <Button
-              title="Next Exercise"
-              onPress={() => {
-                setCurShoul(sideRaise);
-                setReps((reps = 0));
-              }}
-            ></Button>
-            <Button
-              title="Return to Workout Selection"
-              onPress={() => {
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
-              }}
-            ></Button>
           </>
         );
       } else if (curShoul === sideRaise) {
         return (
           <>
-            <Text>Now for some Side Raises.</Text>
-            <Text>{reps}</Text>
-            <TextInput
-              placeholder="Press here to set your current weight."
-              onChangeText={setCurWeight1}
-            ></TextInput>
-            <Text>Current Goal: {usrShoGoals[0]}</Text>
-            <Text>Previous Max: {usrShoMaxes[0]}</Text>
-            <View>
-              <Button
+            <View style={styles.container}>
+              <Text style={styles.instruction}>Exercise 1: Side Raises</Text>
+              <View style={styles.counterGroup}>
+                <TextInput
+                  style={styles.weightInput}
+                  placeholder="press to add weight"
+                  onChangeText={setCurWeight1}
+                ></TextInput>
+                <Text style={styles.goalsText}>
+                  Current Goal:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrShoGoals[0]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.goalsText}>
+                  Previous Max:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrShoMaxes[0]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.counter}>{reps}</Text>
+                <View style={styles.buttonGroup1}>
+                  <Pressable
+                    style={styles.rep1Button}
+                    onPress={() => {
+                      setReps(reps + 1);
+                    }}
+                  >
+                    <Text style={styles.rep1ButtonFont}>+1 Rep</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.rep0Button}
+                    onPress={() => {
+                      setReps((reps = 0));
+                    }}
+                  >
+                    <Text style={styles.rep0ButtonFont}>Set Reps to 0</Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={() => {
+                    setCurShoul(ohPress);
+                    setReps((reps = 0));
+                  }}
+                >
+                  <Text style={styles.nextButtonFont}>Next Exercise</Text>
+                </Pressable>
+              </View>
+              <Pressable
+                style={styles.returnButton4}
                 onPress={() => {
-                  setReps(reps + 1);
+                  navigation.navigate("Regiment Selection", {
+                    loginData: loginData,
+                  });
                 }}
               >
-                +1 Rep
-              </Button>
-              <Button
-                onPress={() => {
-                  setReps((reps = 0));
-                }}
-              >
-                Set Reps to 0
-              </Button>
+                <Text style={styles.returnButtonFont3}>
+                  Return to Workout Selection
+                </Text>
+              </Pressable>
             </View>
-            <Button
-              title="Next Exercise"
-              onPress={() => {
-                setCurShoul(ohPress);
-                setReps((reps = 0));
-              }}
-            ></Button>
-            <Button
-              title="Return to Workout Selection"
-              onPress={() => {
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
-              }}
-            ></Button>
           </>
         );
       } else if (curShoul === ohPress) {
         return (
           <>
-            <Text>Overhead Press.</Text>
-            <Text>{reps}</Text>
-            <TextInput
-              placeholder="Press here to set your current weight."
-              onChangeText={setCurWeight2}
-            ></TextInput>
-            <Text>Current Goal: {usrShoGoals[1]}</Text>
-            <Text>Previous Max: {usrShoMaxes[1]}</Text>
-            <View>
-              <Button
+            <View style={styles.container}>
+              <Text style={styles.instruction}>Exercise 2: Overhead Press</Text>
+              <View style={styles.counterGroup}>
+                <TextInput
+                  style={styles.weightInput}
+                  placeholder="press to add weight"
+                  onChangeText={setCurWeight2}
+                ></TextInput>
+                <Text style={styles.goalsText}>
+                  Current Goal:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrShoGoals[1]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.goalsText}>
+                  Previous Max:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrShoMaxes[1]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.counter}>{reps}</Text>
+                <View style={styles.buttonGroup1}>
+                  <Pressable
+                    style={styles.rep1Button}
+                    onPress={() => {
+                      setReps(reps + 1);
+                    }}
+                  >
+                    <Text style={styles.rep1ButtonFont}>+1 Rep</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.rep0Button}
+                    onPress={() => {
+                      setReps((reps = 0));
+                    }}
+                  >
+                    <Text style={styles.rep0ButtonFont}>Set Reps to 0</Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={() => {
+                    setCurShoul(facePulls);
+                    setReps((reps = 0));
+                  }}
+                >
+                  <Text style={styles.nextButtonFont}>Next Exercise</Text>
+                </Pressable>
+              </View>
+              <Pressable
+                style={styles.returnButton4}
                 onPress={() => {
-                  setReps(reps + 1);
+                  navigation.navigate("Regiment Selection", {
+                    loginData: loginData,
+                  });
                 }}
               >
-                +1 Rep
-              </Button>
-              <Button
-                onPress={() => {
-                  setReps((reps = 0));
-                }}
-              >
-                Set Reps to 0
-              </Button>
+                <Text style={styles.returnButtonFont3}>
+                  Return to Workout Selection
+                </Text>
+              </Pressable>
             </View>
-            <Button
-              title="Next Exercise"
-              onPress={() => {
-                setCurShoul(facePulls);
-                setReps((reps = 0));
-              }}
-            ></Button>
-            <Button
-              title="Return to Workout Selection"
-              onPress={() => {
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
-              }}
-            ></Button>
           </>
         );
       } else if (curShoul === facePulls) {
         return (
           <>
-            <Text>Now for some Face Pulls.</Text>
-            <Text>{reps}</Text>
-            <TextInput
-              placeholder="Press here to set your current weight."
-              onChangeText={setCurWeight3}
-            ></TextInput>
-            <Text>Current Goal: {usrShoGoals[2]}</Text>
-            <Text>Previous Max: {usrShoMaxes[2]}</Text>
-            <View>
-              <Button
-                onPress={() => {
-                  setReps(reps + 1);
-                }}
-              >
-                +1 Rep
-              </Button>
-              <Button
-                onPress={() => {
-                  setReps((reps = 0));
-                }}
-              >
-                Set Reps to 0
-              </Button>
-            </View>
-            <Button
-              title="Complete Workout"
-              onPress={() => {
-                setReps((reps = 0));
-                if (Number(curWeight3) > Number(usrShoMaxes[2])) {
-                  newMax3 = curWeight3;
-                  console.log("new max achieved!");
-                } else {
-                  newMax3 = usrShoMaxes[2];
-                  console.log("almost there");
-                }
-                if (Number(curWeight2) > Number(usrShoMaxes[1])) {
-                  newMax2 = curWeight2;
-                  console.log("new max achieved!");
-                } else {
-                  newMax2 = usrShoMaxes[1];
-                  console.log("almost there");
-                }
-                if (Number(curWeight1) > Number(usrShoMaxes[0])) {
-                  newMax1 = curWeight1;
-                  console.log("new max achieved!");
-                } else {
-                  newMax1 = usrShoMaxes[0];
-                  console.log("almost there");
-                }
-                clearArray(loginData[0].usrMaxes[3]);
-                loginData[0].usrMaxes[3].push(newMax1);
-                loginData[0].usrMaxes[3].push(newMax2);
-                loginData[0].usrMaxes[3].push(newMax3);
+            <View style={styles.container}>
+              <Text style={styles.instruction}>Exercise 3: Face Pulls</Text>
+              <View style={styles.counterGroup}>
+                <TextInput
+                  style={styles.weightInput}
+                  placeholder="press to add weight"
+                  onChangeText={setCurWeight3}
+                ></TextInput>
+                <Text style={styles.goalsText}>
+                  Current Goal:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrShoGoals[2]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.goalsText}>
+                  Previous Max:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {usrShoMaxes[2]}lbs.
+                  </Text>
+                </Text>
+                <Text style={styles.counter}>{reps}</Text>
+                <View style={styles.buttonGroup1}>
+                  <Pressable
+                    style={styles.rep1Button}
+                    onPress={() => {
+                      setReps(reps + 1);
+                    }}
+                  >
+                    <Text style={styles.rep1ButtonFont}>+1 Rep</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.rep0Button}
+                    onPress={() => {
+                      setReps((reps = 0));
+                    }}
+                  >
+                    <Text style={styles.rep0ButtonFont}>Set Reps to 0</Text>
+                  </Pressable>
+                </View>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={() => {
+                    setReps((reps = 0));
+                    if (Number(curWeight3) > Number(usrShoMaxes[2])) {
+                      newMax3 = curWeight3;
+                      console.log("new max achieved!");
+                    } else {
+                      newMax3 = usrShoMaxes[2];
+                      console.log("almost there");
+                    }
+                    if (Number(curWeight2) > Number(usrShoMaxes[1])) {
+                      newMax2 = curWeight2;
+                      console.log("new max achieved!");
+                    } else {
+                      newMax2 = usrShoMaxes[1];
+                      console.log("almost there");
+                    }
+                    if (Number(curWeight1) > Number(usrShoMaxes[0])) {
+                      newMax1 = curWeight1;
+                      console.log("new max achieved!");
+                    } else {
+                      newMax1 = usrShoMaxes[0];
+                      console.log("almost there");
+                    }
+                    clearArray(loginData[0].usrMaxes[3]);
+                    loginData[0].usrMaxes[3].push(newMax1);
+                    loginData[0].usrMaxes[3].push(newMax2);
+                    loginData[0].usrMaxes[3].push(newMax3);
 
-                navigation.navigate("Regiment Selection", {
-                  loginData: loginData,
-                });
-              }}
-            ></Button>
+                    navigation.navigate("Regiment Selection", {
+                      loginData: loginData,
+                    });
+                  }}
+                >
+                  <Text style={styles.nextButtonFont}>Complete Workout</Text>
+                </Pressable>
+              </View>
+            </View>
           </>
         );
       }
@@ -1479,29 +1851,33 @@ const styles = StyleSheet.create({
   },
   container2: {
     backgroundColor: "#FFC904",
+    paddingBottom: 10,
   },
 
   instruction: {
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
     paddingBottom: 10,
     marginHorizontal: 5,
   },
   label: {
-    fontSize: width * 0.06,
-    paddingLeft: width * 0.1,
+    fontSize: width * 0.065,
+    fontWeight: "bold",
+    paddingLeft: 20,
+    paddingBottom: 2,
   },
-  text: { width: width, fontSize: width * 0.1, textAlign: "center" },
+  text: {
+    width: width,
+    fontSize: width * 0.07,
+    textAlign: "center",
+    paddingVertical: 5,
+  },
 
   slider: {
     borderTopWidth: 3,
     borderBottomWidth: 3,
-  },
-
-  button: {
-    width: width * 0.45,
-    margin: 5,
+    backgroundColor: "white",
   },
 
   buttonGroup1: {
@@ -1511,6 +1887,20 @@ const styles = StyleSheet.create({
   buttonGroup2: {
     paddingVertical: width * 0.2,
     width: width * 0.7,
+  },
+
+  button: {
+    width: width * 0.45,
+    margin: 5,
+    padding: 3,
+    borderColor: "black",
+    borderWidth: 1,
+    textAlign: "center",
+    backgroundColor: "#FFE278",
+  },
+  buttonFont: {
+    fontSize: 30,
+    fontWeight: "bold",
   },
 
   logButton: {
@@ -1547,10 +1937,61 @@ const styles = StyleSheet.create({
     marginTop: 10,
     justifyContent: "center",
   },
+  returnButton3: {
+    backgroundColor: "black",
+    borderBottomRightRadius: 15,
+    borderColor: "black",
+    width: width * 0.5,
+    justifyContent: "center",
+  },
+  returnButton4: {
+    backgroundColor: "black",
+    borderColor: "black",
+    borderRadius: 15,
+    width: width * 0.8,
+    padding: 5,
+    marginTop: 70,
+  },
   returnButtonFont: {
     fontSize: 40,
     color: "white",
     textAlign: "center",
+  },
+  returnButtonFont2: {
+    fontSize: 20,
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  returnButtonFont3: {
+    fontSize: 30,
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+
+  disabledButton: {
+    backgroundColor: "gray",
+    borderBottomRightRadius: 15,
+    borderColor: "black",
+    borderWidth: 1,
+    width: width * 0.5,
+    justifyContent: "center",
+  },
+
+  saveButton: {
+    backgroundColor: "#FFE278",
+    borderBottomLeftRadius: 15,
+    borderColor: "black",
+    borderWidth: 1,
+    width: width * 0.5,
+    justifyContent: "center",
+  },
+  saveButtonFont: {
+    margin: 7,
+    fontSize: 20,
+    textAlign: "center",
+    fontWeight: "bold",
   },
 
   listButton: {
@@ -1593,20 +2034,26 @@ const styles = StyleSheet.create({
 
   goalsGroup: {
     flexDirection: "row",
-    marginVertical: 10,
     justifyContent: "center",
   },
   goalsText: {
-    fontSize: width * 0.1,
-    paddingHorizontal: 20,
-    paddingVertical: 3,
+    fontSize: 27,
+    paddingHorizontal: 5,
+    paddingBottom: 5,
   },
   goalsInput: {
     alignSelf: "center",
+    backgroundColor: "#FFE278",
     borderWidth: 1,
     width: width * 0.5,
-    height: width * 0.1,
-    marginBottom: 15,
+    marginBottom: 10,
+    fontSize: 40,
+  },
+  goalsInputGroup: {
+    borderWidth: 3,
+    borderColor: "black",
+    backgroundColor: "white",
+    padding: 10,
   },
 
   input: {
@@ -1623,5 +2070,68 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 10,
     margin: 10,
+  },
+
+  counter: {
+    fontWeight: "bold",
+    color: "white",
+    fontSize: 50,
+    backgroundColor: "black",
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    width: width * 0.8,
+  },
+  counterGroup: {
+    backgroundColor: "#FFE278",
+    borderColor: "black",
+    borderRadius: 15,
+    borderWidth: 1,
+    textAlign: "center",
+    padding: 15,
+  },
+
+  rep1Button: {
+    backgroundColor: "black",
+    width: width * 0.4,
+    justifyContent: "center",
+  },
+  rep1ButtonFont: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "white",
+  },
+  rep0Button: {
+    backgroundColor: "#FFC904",
+    borderWidth: 1,
+    width: width * 0.4,
+    justifyContent: "center",
+  },
+  rep0ButtonFont: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "black",
+  },
+
+  nextButton: {
+    width: width * 0.8,
+    borderWidth: 1,
+    backgroundColor: "white",
+    marginTop: 20,
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 15,
+  },
+  nextButtonFont: {
+    fontSize: 45,
+    fontWeight: "bold",
+  },
+
+  weightInput: {
+    alignSelf: "center",
+    backgroundColor: "white",
+    borderWidth: 1,
+    width: width * 0.6,
+    marginBottom: 10,
+    fontSize: 25,
+    textAlign: "center",
   },
 });
