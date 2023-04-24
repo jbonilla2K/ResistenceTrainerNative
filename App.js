@@ -50,18 +50,34 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="Goals">
         <Stack.Screen
           name="Login"
           component={LoginScreen}
-          options={{ title: "Resistence Trainer" }}
+          options={{ title: "Resistence Trainer - Native" }}
           initialParams={{ loginData: loginData }}
         />
         <Stack.Screen name="Registration" component={RegistrationScreen} />
-        <Stack.Screen name="Regiment Selection" component={SelectionScreen} />
-        <Stack.Screen name="Regiment Editor" component={EditingScreen} />
-        <Stack.Screen name="Goals" component={GoalsScreen} />
-        <Stack.Screen name="Workout" component={CurrentExerciseScreen} />
+        <Stack.Screen
+          name="Regiment Selection"
+          component={SelectionScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Regiment Editor"
+          component={EditingScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Goals"
+          component={GoalsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Workout"
+          component={CurrentExerciseScreen}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -145,56 +161,60 @@ function RegistrationScreen({ navigation, route }) {
   }
   return (
     <>
-      <Text>Please fill out the required fields below.</Text>
-      <Input
-        placeholder="First Name"
-        onChangeText={setFname}
-        errorMessage={validateName(fName)}
-      ></Input>
-      <Input
-        placeholder="Last Name"
-        onChangeText={setLname}
-        errorMessage={validateName(lName)}
-      ></Input>
-      <Input placeholder="Username" onChangeText={setUsername}></Input>
-      <Input
-        placeholder="Password - Be sure to include an uppercase letter and a number."
-        onChangeText={setPassword}
-        errorMessage={validatePassword(password)}
-      ></Input>
-      <Input
-        placeholder="Confirm Password"
-        onChangeText={setConfrimPass}
-        errorMessage={validateConfirmPass(confirmPass)}
-      ></Input>
-      <Input
-        placeholder="Email - someone@email.com"
-        onChangeText={setEmail}
-        onBlur={() => {
-          let result = validateEmail(email);
-          return result;
-        }}
-        errorMessage={validateEmail(email)}
-      ></Input>
-      <Button
-        color="#000"
-        title="Sign Up"
-        testID="register-button"
-        onPress={() => {
-          for (var i = 0; i < flags.length; i++) {
-            if (flags[i] == true) {
-              gate = gate + 1;
+      <View style={styles.container}>
+        <Text>Please fill out the required fields below.</Text>
+        <Input
+          placeholder="First Name"
+          onChangeText={setFname}
+          errorMessage={validateName(fName)}
+        ></Input>
+        <Input
+          placeholder="Last Name"
+          onChangeText={setLname}
+          errorMessage={validateName(lName)}
+        ></Input>
+        <Input placeholder="Username" onChangeText={setUsername}></Input>
+        <Input
+          placeholder="Password - Be sure to include an uppercase letter and a number."
+          onChangeText={setPassword}
+          errorMessage={validatePassword(password)}
+        ></Input>
+        <Input
+          placeholder="Confirm Password"
+          onChangeText={setConfrimPass}
+          errorMessage={validateConfirmPass(confirmPass)}
+        ></Input>
+        <Input
+          placeholder="Email - someone@email.com"
+          onChangeText={setEmail}
+          onBlur={() => {
+            let result = validateEmail(email);
+            return result;
+          }}
+          errorMessage={validateEmail(email)}
+        ></Input>
+        <Button
+          color="#000"
+          title="Sign Up"
+          testID="register-button"
+          onPress={() => {
+            for (var i = 0; i < flags.length; i++) {
+              if (flags[i] == true) {
+                gate = gate + 1;
+              }
             }
-          }
-          if (gate != flags.length) {
-            alert("All fields must be filled in correctly.");
-          } else {
-            loginData.pop();
-            loginData.push(newUser);
-            navigation.navigate("Regiment Selection", { loginData: loginData });
-          }
-        }}
-      ></Button>
+            if (gate != flags.length) {
+              alert("All fields must be filled in correctly.");
+            } else {
+              loginData.pop();
+              loginData.push(newUser);
+              navigation.navigate("Regiment Selection", {
+                loginData: loginData,
+              });
+            }
+          }}
+        ></Button>
+      </View>
     </>
   );
 }
@@ -385,7 +405,7 @@ function SelectionScreen({ navigation, route }) {
       ></Button>
       <Button
         disabled={madeReg}
-        title={madeGoals ? "Set Goals" : "Edit Goals"}
+        title={madeGoals ? "Set Goals" : "View Goals"}
         onPress={() => {
           navigation.navigate("Goals", { loginData: loginData });
         }}
@@ -407,17 +427,17 @@ function SelectionScreen({ navigation, route }) {
 }
 
 function GoalsScreen({ navigation, route }) {
-  let { loginData } = route.params;
+  // let { loginData } = route.params;
 
-  let usrPushGoals = loginData[0].usrGoals[0];
-  let usrPullGoals = loginData[0].usrGoals[1];
-  let usrLegGoals = loginData[0].usrGoals[2];
-  let usrShoGoals = loginData[0].usrGoals[3];
+  // let usrPushGoals = loginData[0].usrGoals[0];
+  // let usrPullGoals = loginData[0].usrGoals[1];
+  // let usrLegGoals = loginData[0].usrGoals[2];
+  // let usrShoGoals = loginData[0].usrGoals[3];
 
-  let usrPushMaxes = loginData[0].usrMaxes[0];
-  let usrPullMaxes = loginData[0].usrMaxes[1];
-  let usrLegMaxes = loginData[0].usrMaxes[2];
-  let usrShoMaxes = loginData[0].usrMaxes[3];
+  // let usrPushMaxes = loginData[0].usrMaxes[0];
+  // let usrPullMaxes = loginData[0].usrMaxes[1];
+  // let usrLegMaxes = loginData[0].usrMaxes[2];
+  // let usrShoMaxes = loginData[0].usrMaxes[3];
 
   let [goal1, setGoal1] = useState();
   let [goal2, setGoal2] = useState();
@@ -431,101 +451,113 @@ function GoalsScreen({ navigation, route }) {
 
   return (
     <>
-      <Text>Select a group of Goals to view and edit.</Text>
-      <Button
-        title="View Push Day Exercises"
-        onPress={() => {
-          setCurGroup("Save Push Workout Goals");
-          setDispGoals(usrPushGoals);
-          setDispMaxes(usrPushMaxes);
-          setDispExercise([
-            "Incline Benchpress",
-            "Flat Benchpress",
-            "Chest Flys",
-          ]);
-          setGoal1(0);
-          setGoal2(0);
-          setGoal3(0);
-          openGate(false);
-        }}
-      ></Button>
-      <Button
-        title="View Pull Day Exercises"
-        onPress={() => {
-          setCurGroup("Save Pull Workout Goals");
-          setDispGoals(usrPullGoals);
-          setDispMaxes(usrPullMaxes);
-          setDispExercise(["Barbell Rows", "Lat Pull Down", "Cable Rows"]);
-          setGoal1(0);
-          setGoal2(0);
-          setGoal3(0);
-          openGate(false);
-        }}
-      ></Button>
-      <Button
-        title="View Leg Day Exercises"
-        onPress={() => {
-          setCurGroup("Save Leg Workout Goals");
-          setDispGoals(usrLegGoals);
-          setDispMaxes(usrLegMaxes);
-          setDispExercise(["Front Squat", "Back Squat", "Deadlift"]);
-          setGoal1(0);
-          setGoal2(0);
-          setGoal3(0);
-          openGate(false);
-        }}
-      ></Button>
-      <Button
-        title="View Shoulder Day Exercises"
-        onPress={() => {
-          setCurGroup("Save Shoulder Workout Goals");
-          setDispGoals(usrShoGoals);
-          setDispMaxes(usrShoMaxes);
-          setDispExercise(["Lateral Raise", "Overhead Press", "Face Pulls"]);
-          setGoal1(0);
-          setGoal2(0);
-          setGoal3(0);
-          openGate(false);
-        }}
-      ></Button>
-      <Text>{dispExercise[0]}</Text>
-      <Text>Previous Max - {dispMaxes[0]}</Text>
-      <Text>Previous Goal - {dispGoals[0]}</Text>
-      <TextInput onChangeText={setGoal1}></TextInput>
-      <Text>{dispExercise[1]}</Text>
-      <Text>Previous Max - {dispMaxes[1]}</Text>
-      <Text>Previous Goal - {dispGoals[1]}</Text>
-      <TextInput onChangeText={setGoal2}></TextInput>
-      <Text>{dispExercise[2]}</Text>
-      <Text>Previous Max - {dispMaxes[2]}</Text>
-      <Text>Previous Goal - {dispGoals[2]}</Text>
-      <TextInput onChangeText={setGoal3}></TextInput>
-      <Button
-        title={curGroup}
-        disabled={gate}
-        onPress={() => {
-          if (curGroup == "Save Push Workout Goals") {
-            clearArray(loginData[0].usrGoals[0]);
-            loginData[0].usrGoals[0].push(goal1, goal2, goal3);
-          } else if (curGroup == "Save Pull Workout Goals") {
-            clearArray(loginData[0].usrGoals[1]);
-            loginData[0].usrGoals[1].push(goal1, goal2, goal3);
-          } else if (curGroup == "Save Leg Workout Goals") {
-            clearArray(loginData[0].usrGoals[2]);
-            loginData[0].usrGoals[2].push(goal1, goal2, goal3);
-          } else if (curGroup == "Save Shoulder Workout Goals") {
-            clearArray(loginData[0].usrGoals[3]);
-            loginData[0].usrGoals[3].push(goal1, goal2, goal3);
-          }
-          openGate(true);
-        }}
-      ></Button>
-      <Button
-        title="Return to Workout Selection"
-        onPress={() => {
-          navigation.navigate("Regiment Selection", { loginData: loginData });
-        }}
-      ></Button>
+      <View style={styles.container}>
+        <Text>Select a group of Goals to view and edit.</Text>
+        <View style={styles.buttonGroup}>
+          <Button
+            style={styles.button}
+            title="Push"
+            onPress={() => {
+              setCurGroup("Save Push Workout Goals");
+              setDispGoals(usrPushGoals);
+              setDispMaxes(usrPushMaxes);
+              setDispExercise([
+                "Incline Benchpress",
+                "Flat Benchpress",
+                "Chest Flys",
+              ]);
+              setGoal1(0);
+              setGoal2(0);
+              setGoal3(0);
+              openGate(false);
+            }}
+          ></Button>
+          <Button
+            style={styles.button}
+            title="Pull"
+            onPress={() => {
+              setCurGroup("Save Pull Workout Goals");
+              setDispGoals(usrPullGoals);
+              setDispMaxes(usrPullMaxes);
+              setDispExercise(["Barbell Rows", "Lat Pull Down", "Cable Rows"]);
+              setGoal1(0);
+              setGoal2(0);
+              setGoal3(0);
+              openGate(false);
+            }}
+          ></Button>
+          <Button
+            style={styles.button}
+            title="Legs"
+            onPress={() => {
+              setCurGroup("Save Leg Workout Goals");
+              setDispGoals(usrLegGoals);
+              setDispMaxes(usrLegMaxes);
+              setDispExercise(["Front Squat", "Back Squat", "Deadlift"]);
+              setGoal1(0);
+              setGoal2(0);
+              setGoal3(0);
+              openGate(false);
+            }}
+          ></Button>
+          <Button
+            style={styles.button}
+            title="Shoulders"
+            onPress={() => {
+              setCurGroup("Save Shoulder Workout Goals");
+              setDispGoals(usrShoGoals);
+              setDispMaxes(usrShoMaxes);
+              setDispExercise([
+                "Lateral Raise",
+                "Overhead Press",
+                "Face Pulls",
+              ]);
+              setGoal1(0);
+              setGoal2(0);
+              setGoal3(0);
+              openGate(false);
+            }}
+          ></Button>
+        </View>
+        <Text>{dispExercise[0]}</Text>
+        <Text>Previous Max - {dispMaxes[0]}</Text>
+        <Text>Previous Goal - {dispGoals[0]}</Text>
+        <TextInput onChangeText={setGoal1}></TextInput>
+        <Text>{dispExercise[1]}</Text>
+        <Text>Previous Max - {dispMaxes[1]}</Text>
+        <Text>Previous Goal - {dispGoals[1]}</Text>
+        <TextInput onChangeText={setGoal2}></TextInput>
+        <Text>{dispExercise[2]}</Text>
+        <Text>Previous Max - {dispMaxes[2]}</Text>
+        <Text>Previous Goal - {dispGoals[2]}</Text>
+        <TextInput onChangeText={setGoal3}></TextInput>
+        <Button
+          title={curGroup}
+          disabled={gate}
+          onPress={() => {
+            if (curGroup == "Save Push Workout Goals") {
+              clearArray(loginData[0].usrGoals[0]);
+              loginData[0].usrGoals[0].push(goal1, goal2, goal3);
+            } else if (curGroup == "Save Pull Workout Goals") {
+              clearArray(loginData[0].usrGoals[1]);
+              loginData[0].usrGoals[1].push(goal1, goal2, goal3);
+            } else if (curGroup == "Save Leg Workout Goals") {
+              clearArray(loginData[0].usrGoals[2]);
+              loginData[0].usrGoals[2].push(goal1, goal2, goal3);
+            } else if (curGroup == "Save Shoulder Workout Goals") {
+              clearArray(loginData[0].usrGoals[3]);
+              loginData[0].usrGoals[3].push(goal1, goal2, goal3);
+            }
+            openGate(true);
+          }}
+        ></Button>
+        <Button
+          title="Return to Workout Selection"
+          onPress={() => {
+            navigation.navigate("Regiment Selection", { loginData: loginData });
+          }}
+        ></Button>
+      </View>
     </>
   );
 }
@@ -806,6 +838,7 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Now for some Barbell Rows.</Text>
+            <Text>{reps}</Text>
             <TextInput
               placeholder="Press here to set your current weight."
               onChangeText={setCurWeight1}
@@ -849,6 +882,7 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Lat Pull Downs.</Text>
+            <Text>{reps}</Text>
             <TextInput
               placeholder="Press here to set your current weight."
               onChangeText={setCurWeight2}
@@ -892,6 +926,7 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Now for some Cable Rows.</Text>
+            <Text>{reps}</Text>
             <TextInput
               placeholder="Press here to set your current weight."
               onChangeText={setCurWeight3}
@@ -1001,6 +1036,7 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Now for some Front Squats.</Text>
+            <Text>{reps}</Text>
             <TextInput
               placeholder="Press here to set your current weight."
               onChangeText={setCurWeight1}
@@ -1044,6 +1080,7 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Now for Back Squats.</Text>
+            <Text>{reps}</Text>
             <TextInput
               placeholder="Press here to set your current weight."
               onChangeText={setCurWeight2}
@@ -1087,6 +1124,7 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Finally, some Deadlifts.</Text>
+            <Text>{reps}</Text>
             <TextInput
               placeholder="Press here to set your current weight."
               onChangeText={setCurWeight3}
@@ -1196,6 +1234,7 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Now for some Side Raises.</Text>
+            <Text>{reps}</Text>
             <TextInput
               placeholder="Press here to set your current weight."
               onChangeText={setCurWeight1}
@@ -1239,6 +1278,7 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Overhead Press.</Text>
+            <Text>{reps}</Text>
             <TextInput
               placeholder="Press here to set your current weight."
               onChangeText={setCurWeight2}
@@ -1282,6 +1322,7 @@ function CurrentExerciseScreen({ navigation, route }) {
         return (
           <>
             <Text>Now for some Face Pulls.</Text>
+            <Text>{reps}</Text>
             <TextInput
               placeholder="Press here to set your current weight."
               onChangeText={setCurWeight3}
@@ -1329,7 +1370,7 @@ function CurrentExerciseScreen({ navigation, route }) {
                   newMax1 = usrShoMaxes[0];
                   console.log("almost there");
                 }
-                clearArray(loginData[0].usrMaxes[2]);
+                clearArray(loginData[0].usrMaxes[3]);
                 loginData[0].usrMaxes[3].push(newMax1);
                 loginData[0].usrMaxes[3].push(newMax2);
                 loginData[0].usrMaxes[3].push(newMax3);
@@ -1364,6 +1405,19 @@ function CurrentExerciseScreen({ navigation, route }) {
 
 const { width } = Dimensions.get("window");
 const styles = StyleSheet.create({
-  container: { backgroundColor: "white" },
+  container: {
+    backgroundColor: "white",
+    align: "center",
+    textAlign: "center",
+  },
   text: { width: width, fontSize: width * 0.1, textAlign: "center" },
+  button: {
+    width: width * 0.22,
+    fontSize: "90%",
+    margin: 5,
+  },
+  buttonGroup: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
 });
