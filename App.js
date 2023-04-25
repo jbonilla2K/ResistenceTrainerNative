@@ -89,12 +89,15 @@ export default function App() {
 }
 
 function RegistrationScreen({ navigation, route }) {
+  //each state tracks a different required input field's value
   let [username, setUsername] = useState("");
   let [password, setPassword] = useState("");
   let [confirmPass, setConfrimPass] = useState("");
   let [fName, setFname] = useState("");
   let [lName, setLname] = useState("");
   let [email, setEmail] = useState("");
+
+  //structure for each user's account information as storred in the loginData array
   let newUser = {
     username: username,
     password: password,
@@ -251,6 +254,8 @@ function RegistrationScreen({ navigation, route }) {
 function EditingScreen({ navigation, route }) {
   let { loginData } = route.params;
   let indicies = [];
+
+  //use state that tracks if the user has saved any goals
   let [saved, setSave] = useState(true);
 
   if (loginData[0].usrRegiment.length != 0) {
@@ -259,6 +264,7 @@ function EditingScreen({ navigation, route }) {
     indicies = [0, 1, 2, 3, 4, 0, 1];
   }
 
+  //each scrollRef tracks the position of a different day of the week slider
   const scrollRef1 = React.useRef(null);
   const scrollRef2 = React.useRef(null);
   const scrollRef3 = React.useRef(null);
@@ -415,8 +421,11 @@ function EditingScreen({ navigation, route }) {
 function SelectionScreen({ navigation, route }) {
   let { loginData } = route.params;
 
+  //useStates which check if a new user has made a regiment or set goals, keeps them from launching a wokrout if true
   let [madeReg, updateMadeReg] = useState(true);
   let [madeGoals, updateMadeGoals] = useState(true);
+
+  //useEffects check if a user has created goals and/or a regiment
   useEffect(() => {
     if (loginData[0].usrRegiment.length != 0) {
       updateMadeReg(false);
@@ -485,6 +494,7 @@ function SelectionScreen({ navigation, route }) {
 function GoalsScreen({ navigation, route }) {
   let { loginData } = route.params;
 
+  //destructuring each set of Goals and Maxes stored as array's in loginData
   let usrPushGoals = loginData[0].usrGoals[0];
   let usrPullGoals = loginData[0].usrGoals[1];
   let usrLegGoals = loginData[0].usrGoals[2];
@@ -495,14 +505,17 @@ function GoalsScreen({ navigation, route }) {
   let usrLegMaxes = loginData[0].usrMaxes[2];
   let usrShoMaxes = loginData[0].usrMaxes[3];
 
+  //each useState stores the user's entered goal for given exercise
   let [goal1, setGoal1] = useState();
   let [goal2, setGoal2] = useState();
   let [goal3, setGoal3] = useState();
 
+  //states maintaining which the user's current goals are displayed (push, pull, legs,or shoulders) as well as the exercises within each group
   let [dispGoals, setDispGoals] = useState([]);
   let [dispMaxes, setDispMaxes] = useState([]);
   let [dispExercise, setDispExercise] = useState([]);
   let [curGroup, setCurGroup] = useState("No Group Selected");
+
   let [gate, openGate] = useState(true);
 
   return (
@@ -676,30 +689,25 @@ function GoalsScreen({ navigation, route }) {
 function CurrentExerciseScreen({ navigation, route }) {
   let { loginData } = route.params;
 
+  //similar destructuring as in GoalsScreen
   let usrPushGoals = loginData[0].usrGoals[0];
   let usrPullGoals = loginData[0].usrGoals[1];
   let usrLegGoals = loginData[0].usrGoals[2];
   let usrShoGoals = loginData[0].usrGoals[3];
-  // let usrPushGoals = ["130", "140", "150"];
-  // let usrPullGoals = ["130", "140", "150"];
-  // let usrLegGoals = ["160", "170", "180"];
-  // let usrShoGoals = ["190", "200", "210"];
+
   let usrPushMaxes = loginData[0].usrMaxes[0];
   let usrPullMaxes = loginData[0].usrMaxes[1];
   let usrLegMaxes = loginData[0].usrMaxes[2];
   let usrShoMaxes = loginData[0].usrMaxes[3];
-  // let usrPushMaxes = ["135", "145", "155"];
-  // let usrPullMaxes = ["135", "145", "155"];
-  // let usrLegMaxes = ["235", "245", "255"];
-  // let usrShoMaxes = ["335", "345", "355"];
+
   let [reps, setReps] = useState(0);
 
   let usrReg = loginData[0].usrRegiment;
   const d = new Date();
   let day = d.getDay();
   let regIndex = usrReg[0][day];
-  // let regIndex = 3;
 
+  //each useState tracks the weight a given user has entered for given exercise in the order
   let [curWeight1, setCurWeight1] = useState();
   let [curWeight2, setCurWeight2] = useState();
   let [curWeight3, setCurWeight3] = useState();
@@ -1824,18 +1832,35 @@ function CurrentExerciseScreen({ navigation, route }) {
     case 4:
       return (
         <>
-          <Text>Looks like today is your Rest Day!</Text>
-          <Text>
-            Keep your muscles in good condition with the following stretches.
-          </Text>
-          <Button
-            title="Return to Workout Selection"
-            onPress={() => {
-              navigation.navigate("Regiment Selection", {
-                loginData: loginData,
-              });
-            }}
-          ></Button>
+          <View style={styles.container}>
+            <View style={styles.counterGroup}>
+              <Text style={styles.instruction}>
+                Looks like today is your Rest Day!
+              </Text>
+              <Text style={styles.label}>
+                Keep your muscles in good condition with effective stretching
+                and plenty of sleep!
+              </Text>
+              <Pressable
+                onPress={() => {
+                  navigation.navigate("Regiment Selection", {
+                    loginData: loginData,
+                  });
+                }}
+                style={styles.returnButton4}
+              >
+                <Text
+                  style={{
+                    fontSize: 30,
+                    color: "white",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Return to Workout Selection
+                </Text>
+              </Pressable>
+            </View>
+          </View>
         </>
       );
   }
@@ -1851,7 +1876,7 @@ const styles = StyleSheet.create({
   },
   container2: {
     backgroundColor: "#FFC904",
-    paddingBottom: 10,
+    paddingBottom: 100,
   },
 
   instruction: {
@@ -2054,6 +2079,8 @@ const styles = StyleSheet.create({
     borderColor: "black",
     backgroundColor: "white",
     padding: 10,
+    paddingHorizontal: 30,
+    borderRadius: 15,
   },
 
   input: {

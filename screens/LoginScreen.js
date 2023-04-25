@@ -5,6 +5,8 @@ import * as React from "react";
 
 export default function LoginScreen({ navigation, route }) {
   let { loginData } = route.params;
+
+  //state for each input field
   let [username, setUsername] = useState(" ");
   let [password, setPassword] = useState(" ");
   return (
