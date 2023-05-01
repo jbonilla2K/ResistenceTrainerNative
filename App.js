@@ -8,13 +8,13 @@ import {
   View,
   Dimensions,
   Pressable,
+  TextInput,
 } from "react-native";
 import { CheckBox, Input, Button } from "@rneui/themed";
 import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TextInput } from "react-native-web";
 import { SwiperFlatList } from "react-native-swiper-flatlist";
 
 import LoginScreen from "./screens/LoginScreen";
@@ -174,36 +174,36 @@ function RegistrationScreen({ navigation, route }) {
           Please fill out the required fields below.
         </Text>
         <View style={styles.inputGroup}>
-          <Input
+          <TextInput
             style={styles.input}
             placeholder="First Name"
             onChangeText={setFname}
             errorMessage={validateName(fName)}
-          ></Input>
-          <Input
+          ></TextInput>
+          <TextInput
             style={styles.input}
             placeholder="Last Name"
             onChangeText={setLname}
             errorMessage={validateName(lName)}
-          ></Input>
-          <Input
+          ></TextInput>
+          <TextInput
             style={styles.input}
             placeholder="Username"
             onChangeText={setUsername}
-          ></Input>
-          <Input
+          ></TextInput>
+          <TextInput
             style={styles.input}
             placeholder="Password"
             onChangeText={setPassword}
             errorMessage={validatePassword(password)}
-          ></Input>
-          <Input
+          ></TextInput>
+          <TextInput
             style={styles.input}
             placeholder="Confirm Password"
             onChangeText={setConfrimPass}
             errorMessage={validateConfirmPass(confirmPass)}
-          ></Input>
-          <Input
+          ></TextInput>
+          <TextInput
             style={styles.input}
             placeholder="Email"
             onChangeText={setEmail}
@@ -212,7 +212,7 @@ function RegistrationScreen({ navigation, route }) {
               return result;
             }}
             errorMessage={validateEmail(email)}
-          ></Input>
+          ></TextInput>
         </View>
         <View style={styles.buttonGroup1}>
           <Pressable
@@ -293,7 +293,7 @@ function EditingScreen({ navigation, route }) {
   const regDays = ["Push", "Pull", "Legs", "Shoulders", "Rest"];
   return (
     <>
-      <View style={styles.container2}>
+      <SafeAreaView style={styles.container2}>
         <Text style={{ fontWeight: "bold", textAlign: "center", fontSize: 20 }}>
           Swipe the white lines to edit.
         </Text>
@@ -413,7 +413,7 @@ function EditingScreen({ navigation, route }) {
             <Text style={styles.returnButtonFont2}>Workout Selection</Text>
           </Pressable>
         </View>
-      </View>
+      </SafeAreaView>
     </>
   );
 }
@@ -1876,7 +1876,6 @@ const styles = StyleSheet.create({
   },
   container2: {
     backgroundColor: "#FFC904",
-    paddingBottom: 100,
   },
 
   instruction: {
@@ -1900,6 +1899,7 @@ const styles = StyleSheet.create({
   },
 
   slider: {
+    paddingVertical: 10,
     borderTopWidth: 3,
     borderBottomWidth: 3,
     backgroundColor: "white",
@@ -2085,10 +2085,13 @@ const styles = StyleSheet.create({
 
   input: {
     width: width * 0.85,
-    height: width * 0.17,
     fontSize: 30,
-    paddingHorizontal: 20,
     color: "black",
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 10,
+    padding: 3,
+    margin: 10,
   },
   inputGroup: {
     borderWidth: 1,
@@ -2107,13 +2110,13 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     width: width * 0.8,
+    textAlign: "center",
   },
   counterGroup: {
     backgroundColor: "#FFE278",
     borderColor: "black",
     borderRadius: 15,
     borderWidth: 1,
-    textAlign: "center",
     padding: 15,
   },
 
@@ -2126,6 +2129,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold",
     color: "white",
+    textAlign: "center",
   },
   rep0Button: {
     backgroundColor: "#FFC904",
@@ -2137,6 +2141,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold",
     color: "black",
+    textAlign: "center",
   },
 
   nextButton: {
@@ -2150,6 +2155,7 @@ const styles = StyleSheet.create({
   nextButtonFont: {
     fontSize: 45,
     fontWeight: "bold",
+    textAlign: "center",
   },
 
   weightInput: {

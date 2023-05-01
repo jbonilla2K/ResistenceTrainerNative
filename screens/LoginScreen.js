@@ -1,6 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { CheckBox, Input, Button } from "@rneui/themed";
-import { Text, StyleSheet, View, Dimensions, Pressable } from "react-native";
+import {
+  Text,
+  StyleSheet,
+  View,
+  Dimensions,
+  Pressable,
+  TextInput,
+} from "react-native";
 import * as React from "react";
 
 export default function LoginScreen({ navigation, route }) {
@@ -14,16 +21,16 @@ export default function LoginScreen({ navigation, route }) {
       <View style={styles.container}>
         <View style={styles.inputGroup}>
           <Text style={styles.title}>Resistence Trainer - Native</Text>
-          <Input
+          <TextInput
             style={styles.input}
             placeholder="Username"
             onChangeText={setUsername}
-          ></Input>
-          <Input
+          ></TextInput>
+          <TextInput
             style={styles.input}
             placeholder="Password"
             onChangeText={setPassword}
-          ></Input>
+          ></TextInput>
         </View>
         <View style={styles.buttonGroup}>
           <Pressable
@@ -100,10 +107,13 @@ const styles = StyleSheet.create({
   },
   input: {
     width: width * 0.85,
-    height: width * 0.25,
     fontSize: 30,
-    paddingHorizontal: 20,
     color: "black",
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 10,
+    padding: 3,
+    margin: 10,
   },
   inputGroup: {
     borderWidth: 1,
